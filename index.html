@@ -2853,6 +2853,346 @@
     }
 
     /* Tablet / HP */
+
+    /* V22 patch: full visual panels for letter, wishes, secret letter, and ending */
+    #sceneLetter,
+    #sceneWishes,
+    #sceneSecretLetter,
+    #sceneEnding {
+      padding: clamp(10px, 2vw, 24px);
+      padding-top: clamp(58px, 8dvh, 82px);
+    }
+
+    #sceneLetter .scene-inner,
+    #sceneWishes .scene-inner,
+    #sceneSecretLetter .scene-inner,
+    #sceneEnding .scene-inner {
+      width: min(1240px, 100%);
+      min-height: calc(100dvh - clamp(76px, 10dvh, 112px));
+      grid-template-rows: minmax(0, 1fr) auto;
+      gap: clamp(10px, 1.8dvh, 18px);
+    }
+
+    #sceneLetter .stage,
+    #sceneWishes .stage,
+    #sceneSecretLetter .stage,
+    #sceneEnding .stage {
+      min-height: 0;
+      height: clamp(480px, 69dvh, 840px);
+      max-height: 78dvh;
+      border-radius: clamp(22px, 3vw, 36px);
+      overflow: hidden;
+      box-shadow: 0 26px 70px rgba(45,58,46,0.18);
+      border: 1px solid rgba(255,255,255,0.78);
+      background:
+        radial-gradient(circle at 18% 16%, rgba(255,255,255,0.82), transparent 25%),
+        radial-gradient(circle at 84% 84%, rgba(255,245,223,0.96), transparent 34%),
+        linear-gradient(160deg, #fbfcf7 0%, #eef5e8 38%, #d9e7cd 72%, #b8cfaa 100%);
+    }
+
+    #sceneLetter .ending-stage::before,
+    #sceneWishes .ending-stage::before,
+    #sceneSecretLetter .ending-stage::before,
+    #sceneEnding .ending-stage::before {
+      content: "23";
+      position: absolute;
+      left: 50%;
+      top: 52%;
+      transform: translate(-50%, -50%);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(10rem, 28vmin, 23rem);
+      line-height: 1;
+      letter-spacing: -0.12em;
+      color: rgba(74,103,65,0.05);
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    #sceneLetter .ending-stage::after,
+    #sceneWishes .ending-stage::after,
+    #sceneSecretLetter .ending-stage::after,
+    #sceneEnding .ending-stage::after {
+      content: "";
+      position: absolute;
+      inset: clamp(12px, 2.4vmin, 28px);
+      border-radius: clamp(18px, 2.6vw, 30px);
+      border: 1px solid rgba(74,103,65,0.16);
+      box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,0.52),
+        inset 0 0 70px rgba(255,255,255,0.16);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    #sceneLetter .reveal-card.letter,
+    #sceneWishes .reveal-card.letter,
+    #sceneEnding .reveal-card.letter,
+    #sceneSecretLetter .secret-letter {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      height: 100%;
+      max-width: none;
+      max-height: none;
+      overflow: auto;
+      padding:
+        clamp(24px, 4.2vmin, 60px)
+        clamp(20px, 5vmin, 72px);
+      margin: 0;
+      border-radius: 0;
+      background: transparent;
+      border: 0;
+      box-shadow: none;
+      backdrop-filter: none;
+      animation: none;
+    }
+
+    #sceneLetter .reveal-card.letter,
+    #sceneSecretLetter .secret-letter {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      text-align: left;
+    }
+
+    #sceneWishes .reveal-card.letter,
+    #sceneEnding .reveal-card.letter {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    #sceneLetter .letter h1,
+    #sceneWishes .letter h2,
+    #sceneSecretLetter .secret-letter h1,
+    #sceneEnding .letter h1 {
+      font-size: clamp(2.3rem, 5.8vmin, 5rem);
+      line-height: 1.04;
+      margin-bottom: clamp(14px, 2vmin, 22px);
+      text-wrap: balance;
+    }
+
+    #sceneLetter .letter p,
+    #sceneWishes .letter > p,
+    #sceneSecretLetter .secret-letter p,
+    #sceneEnding .letter p {
+      font-size: clamp(0.94rem, 1.55vmin, 1.12rem);
+      line-height: 1.78;
+      color: rgba(45,58,46,0.88);
+    }
+
+    #sceneLetter .letter .sign,
+    #sceneSecretLetter .secret-letter .sign,
+    #sceneEnding .letter p[style] {
+      margin-top: clamp(14px, 2.4vmin, 24px);
+    }
+
+    #sceneLetter .letter .sign,
+    #sceneSecretLetter .secret-letter p:last-of-type {
+      font-size: clamp(1.06rem, 1.85vmin, 1.32rem);
+    }
+
+    #sceneLetter #selectedWishParagraph {
+      margin-top: clamp(10px, 1.5vmin, 16px);
+      padding: clamp(14px, 2vmin, 18px) clamp(16px, 2.5vmin, 22px);
+      border-radius: 24px;
+      background: rgba(255,255,255,0.48);
+      border: 1px solid rgba(255,255,255,0.7);
+    }
+
+    #sceneWishes .wish-grid {
+      margin-top: clamp(18px, 2.5vmin, 26px);
+      width: 100%;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: clamp(12px, 1.7vmin, 16px);
+      align-items: stretch;
+    }
+
+    #sceneWishes .wish-card {
+      height: 100%;
+      padding: clamp(14px, 2vmin, 20px);
+      border-radius: 22px;
+      background: rgba(255,255,255,0.66);
+      border: 1px solid rgba(255,255,255,0.82);
+      box-shadow: 0 12px 30px rgba(45,58,46,0.06);
+    }
+
+    #sceneWishes .wish-card p {
+      margin: 0;
+      font-size: clamp(0.88rem, 1.35vmin, 1rem);
+      line-height: 1.65;
+    }
+
+    #sceneSecretLetter .secret-letter {
+      background: transparent;
+    }
+
+    #sceneSecretLetter .secret-letter .stamp {
+      display: inline-flex;
+      margin-bottom: clamp(12px, 1.8vmin, 18px);
+      align-self: flex-start;
+    }
+
+    #sceneEnding .reveal-card.letter {
+      text-align: center;
+      align-items: center;
+    }
+
+    #sceneEnding .letter h1 {
+      max-width: min(720px, 92%);
+      margin-inline: auto;
+    }
+
+    #sceneEnding .letter p {
+      max-width: min(720px, 92%);
+      margin-inline: auto;
+    }
+
+    #sceneEnding .ending-video-inline {
+      width: min(900px, 94%);
+      margin: clamp(14px, 2.2vmin, 22px) auto 0;
+    }
+
+    #sceneEnding .ending-video-caption {
+      max-width: min(760px, 92%);
+      margin-inline: auto;
+      font-size: clamp(0.78rem, 1.15vmin, 0.9rem);
+    }
+
+    #sceneLetter .dialog,
+    #sceneWishes .dialog,
+    #sceneSecretLetter .dialog,
+    #sceneEnding .dialog {
+      min-height: auto;
+      padding: clamp(14px, 2vmin, 20px);
+      border-radius: clamp(20px, 2.6vw, 30px);
+    }
+
+    #sceneLetter .dialog-text,
+    #sceneWishes .dialog-text,
+    #sceneSecretLetter .dialog-text,
+    #sceneEnding .dialog-text {
+      min-height: auto;
+      font-size: clamp(0.98rem, 2vmin, 1.3rem);
+      line-height: 1.45;
+    }
+
+    /* Laptop pendek */
+    @media (min-width: 821px) and (max-height: 760px) {
+      #sceneLetter .stage,
+      #sceneWishes .stage,
+      #sceneSecretLetter .stage,
+      #sceneEnding .stage {
+        height: 62dvh;
+        max-height: 62dvh;
+      }
+
+      #sceneLetter .letter h1,
+      #sceneWishes .letter h2,
+      #sceneSecretLetter .secret-letter h1,
+      #sceneEnding .letter h1 {
+        font-size: clamp(2rem, 4.7vmin, 4rem);
+      }
+
+      #sceneWishes .wish-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      #sceneEnding .ending-video-inline {
+        width: min(760px, 92%);
+      }
+    }
+
+    /* Tablet / HP */
+    @media (max-width: 820px) {
+      #sceneLetter,
+      #sceneWishes,
+      #sceneSecretLetter,
+      #sceneEnding {
+        padding: 10px;
+        padding-top: 64px;
+      }
+
+      #sceneLetter .scene-inner,
+      #sceneWishes .scene-inner,
+      #sceneSecretLetter .scene-inner,
+      #sceneEnding .scene-inner {
+        min-height: calc(100dvh - 74px);
+        gap: 10px;
+      }
+
+      #sceneLetter .stage,
+      #sceneWishes .stage,
+      #sceneSecretLetter .stage,
+      #sceneEnding .stage {
+        height: clamp(520px, 70dvh, 760px);
+        max-height: 74dvh;
+        border-radius: 24px;
+      }
+
+      #sceneLetter .ending-stage::after,
+      #sceneWishes .ending-stage::after,
+      #sceneSecretLetter .ending-stage::after,
+      #sceneEnding .ending-stage::after {
+        inset: 14px;
+        border-radius: 22px;
+      }
+
+      #sceneLetter .reveal-card.letter,
+      #sceneWishes .reveal-card.letter,
+      #sceneEnding .reveal-card.letter,
+      #sceneSecretLetter .secret-letter {
+        padding: 28px 18px;
+      }
+
+      #sceneLetter .letter h1,
+      #sceneWishes .letter h2,
+      #sceneSecretLetter .secret-letter h1,
+      #sceneEnding .letter h1 {
+        font-size: clamp(1.95rem, 8vw, 3.2rem);
+      }
+
+      #sceneLetter .letter p,
+      #sceneWishes .letter > p,
+      #sceneSecretLetter .secret-letter p,
+      #sceneEnding .letter p {
+        font-size: clamp(0.86rem, 3.2vw, 1rem);
+        line-height: 1.65;
+      }
+
+      #sceneWishes .wish-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+
+      #sceneWishes .wish-card p {
+        font-size: clamp(0.84rem, 3vw, 0.95rem);
+      }
+
+      #sceneEnding .ending-video-inline {
+        width: 100%;
+      }
+    }
+
+    /* HP sangat pendek */
+    @media (max-width: 520px) and (max-height: 740px) {
+      #sceneLetter .stage,
+      #sceneWishes .stage,
+      #sceneSecretLetter .stage,
+      #sceneEnding .stage {
+        height: 66dvh;
+        max-height: 66dvh;
+      }
+
+      #sceneLetter .reveal-card.letter,
+      #sceneWishes .reveal-card.letter,
+      #sceneEnding .reveal-card.letter,
+      #sceneSecretLetter .secret-letter {
+        padding: 22px 14px;
+      }
+    }
+
     @media (max-width: 820px) {
       #sceneFinalCard {
         padding: 10px;
@@ -4667,14 +5007,14 @@
       }, 950);
 
       function startMiniTimer(onDone) {
-        let left = 3;
+        let left = 5;
         timerText.textContent = left;
         timerCircle.style.setProperty("--progress", 100);
 
         const interval = setInterval(() => {
           left--;
           timerText.textContent = left;
-          timerCircle.style.setProperty("--progress", (left / 3) * 100);
+          timerCircle.style.setProperty("--progress", (left / 5) * 100);
 
           if (left <= 0) {
             clearInterval(interval);
@@ -4696,17 +5036,17 @@
         setTimeout(() => {
           candle.style.setProperty("--smoke-delay", index * 8);
           candle.classList.add("out");
-        }, index * 130);
+        }, index * 220);
       });
 
       setTimeout(() => {
         startConfetti(3800, 190);
         playHappyBirthday();
-      }, 3100);
+      }, 5200);
 
       setTimeout(() => {
         goLetter();
-      }, 8500);
+      }, 10500);
     }
 
 
