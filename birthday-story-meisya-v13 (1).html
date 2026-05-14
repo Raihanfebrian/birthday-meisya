@@ -1,0 +1,4400 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>A Little Night Before 23 — For Meisya</title>
+  <style>
+    :root {
+      --primary: #87A878;
+      --light: #C8D9B8;
+      --bg: #F5F7F2;
+      --cream: #FFF5DF;
+      --cream-2: #F2DDAE;
+      --accent: #4A6741;
+      --dark: #2D3A2E;
+      --deep: #162116;
+      --white: #FFFFFF;
+      --text-soft: rgba(45, 58, 46, 0.74);
+      --shadow: rgba(22, 33, 22, 0.22);
+      --glass: rgba(255, 255, 255, 0.72);
+      --stroke: rgba(255, 255, 255, 0.72);
+      --warning: #d9a441;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html,
+    body {
+      width: 100%;
+      min-height: 100%;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--deep);
+      color: var(--dark);
+      overflow-x: hidden;
+    }
+
+    body {
+      min-height: 100vh;
+    }
+
+    button {
+      border: 0;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    .game {
+      min-height: 100vh;
+      width: 100%;
+      position: relative;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 20% 15%, rgba(200, 217, 184, 0.14), transparent 28%),
+        linear-gradient(135deg, #10170f 0%, #172317 42%, #0b100b 100%);
+    }
+
+    .scene {
+      display: none;
+      min-height: 100vh;
+      width: 100%;
+      position: relative;
+      padding: 24px;
+      isolation: isolate;
+    }
+
+    .scene.active {
+      display: grid;
+      place-items: center;
+      animation: fadeScene 700ms ease both;
+    }
+
+    @keyframes fadeScene {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .scene-inner {
+      width: min(1080px, 100%);
+      min-height: min(760px, calc(100vh - 48px));
+      display: grid;
+      grid-template-rows: 1fr auto;
+      gap: 18px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .stage {
+      position: relative;
+      min-height: 460px;
+      width: 100%;
+      border-radius: 36px;
+      overflow: hidden;
+      box-shadow: 0 30px 100px rgba(0,0,0,0.32);
+      border: 1px solid rgba(255,255,255,0.12);
+      background: #141e14;
+    }
+
+    .topbar {
+      position: fixed;
+      z-index: 50;
+      top: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: min(720px, calc(100% - 28px));
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.72);
+      backdrop-filter: blur(18px);
+      border: 1px solid rgba(255,255,255,0.68);
+      box-shadow: 0 14px 40px rgba(0,0,0,0.13);
+      color: var(--accent);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 350ms ease;
+    }
+
+    .topbar.show {
+      opacity: 1;
+    }
+
+    .progress-wrap {
+      flex: 1;
+      height: 9px;
+      background: rgba(74, 103, 65, 0.12);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      border-radius: inherit;
+      transition: width 500ms ease;
+    }
+
+    .topbar-label {
+      font-size: 0.76rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+    }
+
+    .sound-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      background: rgba(74, 103, 65, 0.12);
+      color: var(--accent);
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+    }
+
+    .dialog {
+      width: 100%;
+      min-height: 182px;
+      border-radius: 30px;
+      padding: 22px;
+      background: rgba(255,255,255,0.84);
+      border: 1px solid rgba(255,255,255,0.78);
+      backdrop-filter: blur(18px);
+      box-shadow: 0 24px 70px rgba(0,0,0,0.18);
+      display: grid;
+      gap: 14px;
+    }
+
+    .speaker {
+      display: inline-flex;
+      width: fit-content;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 13px;
+      border-radius: 999px;
+      background: rgba(135,168,120,0.16);
+      color: var(--accent);
+      font-weight: 900;
+      font-size: 0.86rem;
+      letter-spacing: 0.02em;
+    }
+
+    .dialog-text {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(1.16rem, 2.6vw, 1.72rem);
+      line-height: 1.58;
+      color: var(--dark);
+      min-height: 74px;
+      white-space: pre-line;
+    }
+
+    .choices {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .choice,
+    .btn {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      min-height: 46px;
+      padding: 12px 17px;
+      border-radius: 999px;
+      color: white;
+      background: var(--accent);
+      font-weight: 850;
+      box-shadow: 0 12px 34px rgba(74,103,65,0.24);
+      transition: transform 190ms ease, box-shadow 190ms ease, background 190ms ease;
+    }
+
+    .choice:hover,
+    .btn:hover {
+      transform: translateY(-2px);
+      background: #3b5735;
+      box-shadow: 0 16px 42px rgba(74,103,65,0.31);
+    }
+
+    .choice.secondary,
+    .btn.secondary {
+      background: rgba(255,255,255,0.9);
+      color: var(--accent);
+      border: 1px solid rgba(74,103,65,0.14);
+      box-shadow: 0 12px 32px rgba(45,58,46,0.09);
+    }
+
+    .choice.ghost,
+    .btn.ghost {
+      background: rgba(135,168,120,0.12);
+      color: var(--accent);
+      box-shadow: none;
+      border: 1px solid rgba(74,103,65,0.13);
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .soft-title {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(2rem, 7vw, 5.4rem);
+      line-height: 1.06;
+      letter-spacing: -0.055em;
+      color: var(--white);
+      text-align: center;
+      text-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    }
+
+    .eyebrow {
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--light);
+      font-size: 0.75rem;
+      font-weight: 900;
+      text-align: center;
+      margin-bottom: 14px;
+    }
+
+    /* Scene: darkness */
+    .dark-stage {
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(circle at 50% 52%, rgba(200,217,184,0.10), transparent 16%),
+        radial-gradient(circle at 70% 20%, rgba(135,168,120,0.09), transparent 22%),
+        linear-gradient(135deg, #030603 0%, #0d140d 100%);
+    }
+
+    .dark-stage::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at center, transparent 0 18%, rgba(0,0,0,0.56) 64%, rgba(0,0,0,0.88) 100%);
+      pointer-events: none;
+    }
+
+    .dark-glow {
+      width: 220px;
+      height: 220px;
+      border-radius: 999px;
+      background: rgba(200,217,184,0.10);
+      filter: blur(26px);
+      animation: pulseGlow 2.6s ease-in-out infinite;
+    }
+
+    @keyframes pulseGlow {
+      0%, 100% {
+        opacity: 0.28;
+        transform: scale(0.95);
+      }
+      50% {
+        opacity: 0.66;
+        transform: scale(1.08);
+      }
+    }
+
+    /* Room */
+    .room-stage {
+      background:
+        radial-gradient(circle at 20% 16%, rgba(255,255,255,0.65), transparent 18%),
+        linear-gradient(180deg, #e9f1df 0%, #d9e8cd 55%, #c8d9b8 56%, #adbd9e 100%);
+      overflow: hidden;
+    }
+
+    .room-stage.dim {
+      filter: brightness(0.34) saturate(0.8);
+    }
+
+    .wall-line {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 56%;
+      height: 2px;
+      background: rgba(74,103,65,0.16);
+    }
+
+    .floor-rug {
+      position: absolute;
+      left: 10%;
+      bottom: 6%;
+      width: 45%;
+      height: 18%;
+      border-radius: 50%;
+      background:
+        repeating-linear-gradient(90deg, rgba(255,255,255,0.35) 0 16px, rgba(135,168,120,0.16) 16px 32px),
+        #f6eddb;
+      box-shadow: inset 0 0 0 2px rgba(255,255,255,0.45), 0 20px 40px rgba(74,103,65,0.09);
+    }
+
+    .bed {
+      position: absolute;
+      left: 5%;
+      bottom: 13%;
+      width: 34%;
+      height: 25%;
+      border-radius: 24px 28px 12px 12px;
+      background: linear-gradient(180deg, #fff8e8, #f0dfbb);
+      box-shadow: 0 18px 38px rgba(74,103,65,0.15);
+    }
+
+    .bed::before {
+      content: "";
+      position: absolute;
+      left: 7%;
+      top: -18%;
+      width: 30%;
+      height: 34%;
+      border-radius: 18px;
+      background: #ffffff;
+      box-shadow: inset -8px -8px 0 rgba(200,217,184,0.45);
+    }
+
+    .bed::after {
+      content: "";
+      position: absolute;
+      left: 2%;
+      right: 2%;
+      bottom: 16%;
+      height: 42%;
+      border-radius: 18px;
+      background: linear-gradient(135deg, #87A878, #C8D9B8);
+    }
+
+    .window {
+      position: absolute;
+      left: 12%;
+      top: 12%;
+      width: 22%;
+      height: 28%;
+      border-radius: 18px;
+      background:
+        linear-gradient(90deg, transparent calc(50% - 3px), rgba(255,255,255,0.88) calc(50% - 3px) calc(50% + 3px), transparent calc(50% + 3px)),
+        linear-gradient(0deg, transparent calc(50% - 3px), rgba(255,255,255,0.88) calc(50% - 3px) calc(50% + 3px), transparent calc(50% + 3px)),
+        linear-gradient(180deg, #dbeeff, #fff9e8);
+      border: 10px solid rgba(255,255,255,0.72);
+      box-shadow: 0 15px 34px rgba(74,103,65,0.12);
+    }
+
+    .moon {
+      position: absolute;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: #fff4c9;
+      right: 14%;
+      top: 16%;
+      box-shadow: 0 0 22px rgba(255,244,201,0.7);
+    }
+
+    .desk {
+      position: absolute;
+      left: 41%;
+      bottom: 18%;
+      width: 23%;
+      height: 18%;
+      border-radius: 18px 18px 10px 10px;
+      background: linear-gradient(180deg, #8fad7e, #6f8f64);
+      box-shadow: 0 22px 36px rgba(74,103,65,0.18);
+    }
+
+    .desk::before {
+      content: "";
+      position: absolute;
+      left: -4%;
+      right: -4%;
+      top: -18px;
+      height: 26px;
+      border-radius: 14px;
+      background: #fff5df;
+      box-shadow: inset 0 -5px 0 rgba(74,103,65,0.08);
+    }
+
+    .desk-leg {
+      position: absolute;
+      width: 12px;
+      height: 64px;
+      bottom: -54px;
+      border-radius: 999px;
+      background: #5a754f;
+    }
+
+    .desk-leg.left { left: 16%; }
+    .desk-leg.right { right: 16%; }
+
+    .door {
+      position: absolute;
+      right: 8%;
+      bottom: 10%;
+      width: 21%;
+      height: 62%;
+      border-radius: 28px 28px 4px 4px;
+      background:
+        linear-gradient(90deg, rgba(255,255,255,0.12), transparent 28%),
+        linear-gradient(180deg, #6f8f64, #4A6741);
+      box-shadow: inset 0 0 0 8px rgba(45,58,46,0.12), 0 26px 54px rgba(45,58,46,0.18);
+      transform-origin: left center;
+      transition: transform 950ms cubic-bezier(.17,.85,.34,1);
+    }
+
+    .door.open {
+      transform: perspective(900px) rotateY(-46deg) skewY(1deg);
+      filter: brightness(1.1);
+    }
+
+    .door.knocking {
+      animation: knockDoor 550ms ease-in-out 3;
+    }
+
+    @keyframes knockDoor {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-4px) rotate(-0.7deg); }
+      50% { transform: translateX(2px) rotate(0.7deg); }
+      75% { transform: translateX(-2px); }
+    }
+
+    .door::after {
+      content: "";
+      position: absolute;
+      right: 18%;
+      top: 50%;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--cream);
+      box-shadow: 0 0 0 4px rgba(255,255,255,0.12);
+    }
+
+    .door-light {
+      position: absolute;
+      right: 3.5%;
+      bottom: 10%;
+      width: 24%;
+      height: 62%;
+      border-radius: 30px 30px 4px 4px;
+      background: radial-gradient(circle at 20% 50%, rgba(255,245,223,0.96), rgba(255,245,223,0.36) 42%, transparent 72%);
+      opacity: 0;
+      filter: blur(8px);
+      transition: opacity 600ms ease;
+      pointer-events: none;
+    }
+
+    .door.open + .door-light {
+      opacity: 1;
+    }
+
+    .hanging-lamp {
+      position: absolute;
+      left: 50%;
+      top: -2px;
+      width: 4px;
+      height: 82px;
+      background: rgba(74,103,65,0.32);
+      transform: translateX(-50%);
+    }
+
+    .hanging-lamp::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: -22px;
+      width: 88px;
+      height: 44px;
+      transform: translateX(-50%);
+      border-radius: 0 0 70px 70px;
+      background: linear-gradient(180deg, #fff5df, #e9d8aa);
+      box-shadow: 0 18px 60px rgba(255,245,223,0.56);
+    }
+
+    .calendar,
+    .photo,
+    .gift-box,
+    .small-box,
+    .switch {
+      position: absolute;
+      z-index: 4;
+    }
+
+    .calendar {
+      left: 43%;
+      top: 15%;
+      width: 92px;
+      height: 112px;
+      border-radius: 14px;
+      background: #fff;
+      box-shadow: 0 14px 28px rgba(74,103,65,0.12);
+      overflow: hidden;
+      color: var(--accent);
+      text-align: center;
+    }
+
+    .calendar .cal-head {
+      height: 28px;
+      background: var(--primary);
+      color: #fff;
+      font-weight: 900;
+      display: grid;
+      place-items: center;
+      font-size: 0.73rem;
+      letter-spacing: 0.08em;
+    }
+
+    .calendar .date {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 2.4rem;
+      line-height: 1;
+      margin-top: 14px;
+    }
+
+    .calendar .month {
+      font-size: 0.72rem;
+      font-weight: 900;
+      margin-top: 6px;
+    }
+
+    .photo {
+      left: 55%;
+      top: 15.5%;
+      width: 98px;
+      height: 116px;
+      border-radius: 10px;
+      background: #fff;
+      transform: rotate(3deg);
+      box-shadow: 0 14px 28px rgba(74,103,65,0.14);
+      padding: 9px 9px 20px;
+    }
+
+    .photo::before {
+      content: "R + M";
+      display: grid;
+      place-items: center;
+      width: 100%;
+      height: 100%;
+      border-radius: 8px;
+      background:
+        radial-gradient(circle at 50% 30%, rgba(255,255,255,0.65), transparent 22%),
+        linear-gradient(145deg, #C8D9B8, #87A878);
+      color: #fff;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 1.2rem;
+    }
+
+    .gift-box {
+      right: 29%;
+      bottom: 18%;
+      width: 74px;
+      height: 62px;
+      border-radius: 12px;
+      background:
+        linear-gradient(90deg, transparent 42%, #fff5df 42% 58%, transparent 58%),
+        linear-gradient(180deg, #C8D9B8, #87A878);
+      box-shadow: 0 12px 25px rgba(74,103,65,0.18);
+    }
+
+    .gift-box::before {
+      content: "";
+      position: absolute;
+      left: -3px;
+      right: -3px;
+      top: -16px;
+      height: 18px;
+      border-radius: 11px;
+      background:
+        linear-gradient(90deg, transparent 42%, #fff5df 42% 58%, transparent 58%),
+        #9fbd91;
+    }
+
+    .gift-box::after {
+      content: "🔒";
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      font-size: 1.2rem;
+    }
+
+    .small-box {
+      left: 51%;
+      bottom: 39%;
+      width: 50px;
+      height: 38px;
+      border-radius: 8px;
+      background: linear-gradient(180deg, #fff5df, #ecd8a8);
+      box-shadow: 0 10px 20px rgba(74,103,65,0.13);
+    }
+
+    .small-box::after {
+      content: "✉";
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      color: var(--accent);
+      font-weight: 900;
+    }
+
+    .switch {
+      left: 70%;
+      top: 42%;
+      width: 36px;
+      height: 52px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.76);
+      box-shadow: 0 10px 24px rgba(74,103,65,0.12), inset 0 0 0 2px rgba(74,103,65,0.08);
+    }
+
+    .switch::after {
+      content: "";
+      position: absolute;
+      left: 10px;
+      top: 9px;
+      width: 16px;
+      height: 24px;
+      border-radius: 7px;
+      background: linear-gradient(180deg, #dbe8d1, #88a97b);
+      transition: transform 300ms ease;
+    }
+
+    .switch.on::after {
+      transform: translateY(10px);
+    }
+
+    .clickable {
+      cursor: pointer;
+      transition: transform 220ms ease, filter 220ms ease;
+    }
+
+    .clickable:hover {
+      transform: translateY(-3px) scale(1.03);
+      filter: drop-shadow(0 0 15px rgba(255,245,223,0.78));
+    }
+
+    .clickable.found {
+      filter: grayscale(0.2) opacity(0.68);
+    }
+
+    .hotspot-tip {
+      position: absolute;
+      z-index: 20;
+      transform: translateX(-50%);
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.86);
+      color: var(--accent);
+      font-weight: 900;
+      font-size: 0.72rem;
+      box-shadow: 0 10px 24px rgba(74,103,65,0.12);
+      pointer-events: none;
+      animation: floatTip 1.8s ease-in-out infinite;
+    }
+
+    @keyframes floatTip {
+      0%, 100% { transform: translate(-50%, 0); }
+      50% { transform: translate(-50%, -7px); }
+    }
+
+    .clue-panel {
+      position: absolute;
+      top: 18px;
+      left: 18px;
+      z-index: 15;
+      width: min(310px, calc(100% - 36px));
+      padding: 14px;
+      border-radius: 22px;
+      background: rgba(255,255,255,0.76);
+      backdrop-filter: blur(15px);
+      box-shadow: 0 16px 40px rgba(74,103,65,0.13);
+      border: 1px solid rgba(255,255,255,0.72);
+    }
+
+    .clue-title {
+      font-weight: 950;
+      color: var(--accent);
+      font-size: 0.82rem;
+      margin-bottom: 9px;
+      letter-spacing: 0.04em;
+    }
+
+    .clue-list {
+      display: grid;
+      gap: 7px;
+    }
+
+    .clue-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.82rem;
+      color: var(--text-soft);
+      line-height: 1.4;
+    }
+
+    .check {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: rgba(135,168,120,0.16);
+      color: var(--accent);
+      font-size: 0.72rem;
+      font-weight: 950;
+      flex: 0 0 auto;
+    }
+
+    .check.done {
+      background: var(--accent);
+      color: white;
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 22px;
+      transform: translateX(-50%) translateY(20px);
+      z-index: 120;
+      width: min(460px, calc(100% - 28px));
+      padding: 14px 16px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.92);
+      color: var(--dark);
+      box-shadow: 0 18px 60px rgba(0,0,0,0.22);
+      border: 1px solid rgba(255,255,255,0.76);
+      opacity: 0;
+      pointer-events: none;
+      transition: all 260ms ease;
+      line-height: 1.55;
+      font-weight: 730;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* Surprise room */
+    .surprise-stage {
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(circle at 50% 20%, rgba(255,245,223,0.9), transparent 28%),
+        radial-gradient(circle at 12% 25%, rgba(200,217,184,0.8), transparent 20%),
+        radial-gradient(circle at 86% 60%, rgba(135,168,120,0.35), transparent 26%),
+        linear-gradient(180deg, #F5F7F2, #e7f0dd);
+    }
+
+    .bunting {
+      position: absolute;
+      top: 34px;
+      left: 50%;
+      width: min(740px, 86%);
+      transform: translateX(-50%);
+      height: 76px;
+      border-top: 3px dashed rgba(74,103,65,0.26);
+    }
+
+    .flag {
+      position: absolute;
+      top: 0;
+      width: 34px;
+      height: 42px;
+      clip-path: polygon(0 0, 100% 0, 50% 100%);
+      background: var(--primary);
+      transform: translateX(-50%);
+      opacity: 0.92;
+    }
+
+    .flag:nth-child(2n) { background: var(--cream); }
+    .flag:nth-child(3n) { background: var(--light); }
+
+    .flag:nth-child(1) { left: 8%; }
+    .flag:nth-child(2) { left: 18%; }
+    .flag:nth-child(3) { left: 28%; }
+    .flag:nth-child(4) { left: 38%; }
+    .flag:nth-child(5) { left: 48%; }
+    .flag:nth-child(6) { left: 58%; }
+    .flag:nth-child(7) { left: 68%; }
+    .flag:nth-child(8) { left: 78%; }
+    .flag:nth-child(9) { left: 88%; }
+
+    .reveal-card {
+      width: min(780px, 92%);
+      text-align: center;
+      padding: clamp(28px, 6vw, 58px);
+      border-radius: 36px;
+      background: rgba(255,255,255,0.76);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.82);
+      box-shadow: 0 28px 90px rgba(74,103,65,0.16);
+      animation: cardRise 850ms ease both;
+    }
+
+    @keyframes cardRise {
+      from {
+        opacity: 0;
+        transform: translateY(24px) scale(0.98);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .reveal-title {
+      font-family: Georgia, "Times New Roman", serif;
+      color: var(--accent);
+      font-size: clamp(2.4rem, 8vw, 5.2rem);
+      line-height: 1.04;
+      letter-spacing: -0.06em;
+      margin-bottom: 12px;
+    }
+
+    .reveal-sub {
+      color: var(--text-soft);
+      line-height: 1.8;
+      font-size: clamp(0.98rem, 2.5vw, 1.1rem);
+    }
+
+    /* Cake */
+    .cake-area {
+      position: relative;
+      width: min(650px, 96%);
+      margin: 22px auto 4px;
+      display: grid;
+      justify-items: center;
+    }
+
+    .cake-stage-small {
+      position: relative;
+      width: min(520px, 96vw);
+      height: 360px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      padding-bottom: 26px;
+    }
+
+    .cake {
+      position: relative;
+      width: min(420px, 88vw);
+      height: 230px;
+      filter: drop-shadow(0 18px 28px rgba(45, 58, 46, 0.13));
+    }
+
+    .plate {
+      position: absolute;
+      left: 50%;
+      bottom: 0;
+      width: 96%;
+      height: 34px;
+      border-radius: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(180deg, #ffffff, #e8eee1);
+      box-shadow: inset 0 -6px 10px rgba(74, 103, 65, 0.08);
+    }
+
+    .layer {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      border-radius: 24px 24px 18px 18px;
+      overflow: hidden;
+      border: 2px solid rgba(255,255,255,0.72);
+    }
+
+    .layer.bottom {
+      bottom: 24px;
+      width: 90%;
+      height: 92px;
+      background:
+        radial-gradient(circle at 18% 28%, rgba(255,255,255,0.55) 0 10px, transparent 11px),
+        radial-gradient(circle at 48% 52%, rgba(255,255,255,0.36) 0 8px, transparent 9px),
+        radial-gradient(circle at 78% 32%, rgba(255,255,255,0.48) 0 9px, transparent 10px),
+        linear-gradient(180deg, #C8D9B8, #87A878);
+    }
+
+    .layer.middle {
+      bottom: 104px;
+      width: 74%;
+      height: 76px;
+      background:
+        radial-gradient(circle at 22% 45%, rgba(255,255,255,0.52) 0 8px, transparent 9px),
+        radial-gradient(circle at 58% 35%, rgba(255,255,255,0.38) 0 7px, transparent 8px),
+        linear-gradient(180deg, #FFF5DF, #F2DDAE);
+    }
+
+    .layer.top {
+      bottom: 169px;
+      width: 56%;
+      height: 60px;
+      background:
+        radial-gradient(circle at 25% 40%, rgba(255,255,255,0.45) 0 6px, transparent 7px),
+        radial-gradient(circle at 72% 50%, rgba(255,255,255,0.35) 0 5px, transparent 6px),
+        linear-gradient(180deg, #D8E5CA, #9DBD8A);
+    }
+
+    .icing {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 22px;
+      background: rgba(255,255,255,0.82);
+      border-radius: 20px 20px 55% 55%;
+    }
+
+    .icing::before,
+    .icing::after {
+      content: "";
+      position: absolute;
+      top: 14px;
+      width: 20px;
+      height: 26px;
+      background: rgba(255,255,255,0.82);
+      border-radius: 0 0 16px 16px;
+    }
+
+    .icing::before { left: 22%; }
+    .icing::after { right: 28%; height: 21px; }
+
+    .candles {
+      position: absolute;
+      bottom: 225px;
+      left: 50%;
+      width: min(340px, 78vw);
+      transform: translateX(-50%);
+      display: flex;
+      justify-content: center;
+      gap: clamp(2px, 0.65vw, 6px);
+      align-items: flex-end;
+      z-index: 5;
+    }
+
+    .candle {
+      width: clamp(7px, 1.9vw, 11px);
+      height: clamp(38px, 8vw, 52px);
+      border-radius: 6px 6px 3px 3px;
+      background:
+        repeating-linear-gradient(
+          -45deg,
+          #ffffff 0 6px,
+          #C8D9B8 6px 11px
+        );
+      position: relative;
+      box-shadow: inset 0 -7px 8px rgba(74, 103, 65, 0.11);
+      transform-origin: bottom;
+      animation: candleSway 2.6s ease-in-out infinite;
+      animation-delay: calc(var(--i) * -70ms);
+    }
+
+    .candle:nth-child(3n) {
+      background:
+        repeating-linear-gradient(
+          -45deg,
+          #FFF5DF 0 6px,
+          #87A878 6px 11px
+        );
+    }
+
+    @keyframes candleSway {
+      0%, 100% { transform: rotate(-1deg); }
+      50% { transform: rotate(1.4deg); }
+    }
+
+    .wick {
+      position: absolute;
+      left: 50%;
+      top: -8px;
+      width: 2px;
+      height: 10px;
+      border-radius: 99px;
+      background: #3a2c1a;
+      transform: translateX(-50%);
+      z-index: 2;
+    }
+
+    .flame {
+      position: absolute;
+      left: 50%;
+      top: -25px;
+      width: 13px;
+      height: 20px;
+      border-radius: 70% 70% 55% 55%;
+      background: radial-gradient(circle at 50% 66%, #fff7b0 0 22%, #ffd166 35%, #f59f00 68%, transparent 70%);
+      transform: translateX(-50%) rotate(3deg);
+      transform-origin: 50% 95%;
+      filter: drop-shadow(0 0 10px rgba(255, 209, 102, 0.9));
+      animation: flameDance 680ms ease-in-out infinite alternate;
+      transition: opacity 300ms ease, transform 300ms ease;
+      z-index: 4;
+    }
+
+    @keyframes flameDance {
+      from { transform: translateX(-50%) rotate(-6deg) scale(0.92, 1.02); }
+      to { transform: translateX(-50%) rotate(7deg) scale(1.04, 0.96); }
+    }
+
+    .candle.out .flame {
+      opacity: 0;
+      transform: translateX(-50%) translateY(4px) scale(0.1);
+      animation: none;
+    }
+
+    .smoke {
+      position: absolute;
+      left: 50%;
+      top: -28px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(160, 166, 155, 0.48);
+      opacity: 0;
+      transform: translateX(-50%);
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    .candle.out .smoke {
+      animation: smokeRise 1.25s ease-out forwards;
+      animation-delay: calc(var(--smoke-delay, 0) * 1ms);
+    }
+
+    @keyframes smokeRise {
+      0% { opacity: 0; transform: translate(-50%, 0) scale(0.3); }
+      20% { opacity: 0.8; }
+      100% { opacity: 0; transform: translate(calc(-50% + 10px), -52px) scale(1.9); }
+    }
+
+    .timer-box {
+      display: grid;
+      justify-items: center;
+      gap: 14px;
+      margin-top: 12px;
+    }
+
+    .timer-circle {
+      width: 114px;
+      height: 114px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background:
+        conic-gradient(var(--accent) calc(var(--progress) * 1%), rgba(135, 168, 120, 0.18) 0);
+      box-shadow: inset 0 0 0 10px rgba(255,255,255,0.72), 0 18px 40px rgba(74,103,65,0.16);
+      position: relative;
+    }
+
+    .timer-circle::after {
+      content: "";
+      position: absolute;
+      inset: 13px;
+      border-radius: 50%;
+      background: var(--bg);
+      z-index: 1;
+    }
+
+    .timer-text {
+      position: relative;
+      z-index: 2;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 2.1rem;
+      color: var(--accent);
+    }
+
+    .count-blow {
+      font-family: Georgia, "Times New Roman", serif;
+      color: var(--accent);
+      font-size: clamp(2.4rem, 10vw, 6.2rem);
+      line-height: 1.05;
+      animation: popBig 700ms cubic-bezier(.2,1.4,.3,1) both;
+    }
+
+    @keyframes popBig {
+      0% { transform: scale(0.72); opacity: 0; }
+      70% { transform: scale(1.08); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .wish-options {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 22px;
+      text-align: left;
+    }
+
+    .wish-option {
+      min-height: 86px;
+      padding: 16px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.78);
+      border: 1px solid rgba(74,103,65,0.12);
+      box-shadow: 0 14px 34px rgba(45,58,46,0.08);
+      color: var(--dark);
+      text-align: left;
+      line-height: 1.52;
+      font-weight: 760;
+      transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
+    }
+
+    .wish-option:hover {
+      transform: translateY(-3px);
+      background: #fff;
+      border-color: rgba(74,103,65,0.28);
+    }
+
+    .wish-option.selected {
+      background: rgba(135,168,120,0.16);
+      border-color: rgba(74,103,65,0.42);
+      box-shadow: 0 14px 38px rgba(74,103,65,0.16);
+    }
+
+    .letter {
+      text-align: left;
+      max-height: 100%;
+    }
+
+    .letter h1,
+    .letter h2 {
+      font-family: Georgia, "Times New Roman", serif;
+      color: var(--accent);
+      font-weight: 500;
+      letter-spacing: -0.04em;
+      line-height: 1.1;
+    }
+
+    .letter h1 {
+      font-size: clamp(2rem, 6vw, 4rem);
+      margin-bottom: 18px;
+    }
+
+    .letter h2 {
+      font-size: clamp(1.7rem, 5vw, 3.2rem);
+      margin-bottom: 18px;
+    }
+
+    .letter p {
+      font-size: clamp(0.98rem, 2.35vw, 1.08rem);
+      line-height: 1.85;
+      color: rgba(45,58,46,0.86);
+      margin: 14px 0;
+    }
+
+    .letter .sign {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 1.26rem;
+      color: var(--accent);
+      margin-top: 22px;
+    }
+
+    .wish-grid {
+      margin-top: 24px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .wish-card {
+      padding: 18px;
+      border-radius: 22px;
+      background: rgba(255,255,255,0.76);
+      border: 1px solid rgba(255,255,255,0.86);
+      box-shadow: 0 12px 30px rgba(45,58,46,0.08);
+      opacity: 0;
+      transform: translateY(16px);
+      animation: revealWish 650ms ease forwards;
+      animation-delay: calc(var(--i) * 140ms);
+    }
+
+    .wish-card b {
+      color: var(--accent);
+    }
+
+    @keyframes revealWish {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .ending-stage {
+      background:
+        radial-gradient(circle at top left, rgba(200,217,184,0.7), transparent 28%),
+        radial-gradient(circle at bottom right, rgba(255,245,223,0.95), transparent 34%),
+        linear-gradient(135deg, #F5F7F2 0%, #e6efdc 100%);
+    }
+
+    .falling-leaf {
+      position: absolute;
+      top: -40px;
+      width: 15px;
+      height: 32px;
+      border-radius: 100% 0 100% 0;
+      background: rgba(135,168,120,0.68);
+      animation: leafFall linear infinite;
+      animation-duration: calc(9s + var(--d) * 1s);
+      animation-delay: calc(var(--delay) * -1s);
+      left: calc(var(--x) * 1%);
+      transform: rotate(calc(var(--r) * 1deg));
+      z-index: 1;
+    }
+
+    @keyframes leafFall {
+      0% {
+        transform: translateY(-40px) translateX(0) rotate(0deg);
+        opacity: 0;
+      }
+      10% { opacity: 0.7; }
+      100% {
+        transform: translateY(108vh) translateX(80px) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    #confettiCanvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 95;
+    }
+
+    .music-pill {
+      position: fixed;
+      left: 50%;
+      bottom: 16px;
+      transform: translateX(-50%);
+      z-index: 110;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.82);
+      border: 1px solid rgba(74,103,65,0.14);
+      box-shadow: 0 10px 34px rgba(45,58,46,0.13);
+      color: var(--accent);
+      font-size: 0.82rem;
+      backdrop-filter: blur(14px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 300ms ease;
+      font-weight: 850;
+    }
+
+    .music-pill.show {
+      opacity: 1;
+    }
+
+
+
+    .typed-wish-box {
+      margin-top: 24px;
+      display: grid;
+      gap: 12px;
+      text-align: left;
+    }
+
+    .typed-wish-label {
+      font-weight: 950;
+      color: var(--accent);
+      font-size: 0.92rem;
+      letter-spacing: 0.02em;
+    }
+
+    .typed-wish-input {
+      width: 100%;
+      min-height: 150px;
+      resize: vertical;
+      border: 1px solid rgba(74,103,65,0.18);
+      border-radius: 24px;
+      padding: 18px;
+      outline: none;
+      background: rgba(255,255,255,0.86);
+      color: var(--dark);
+      font: inherit;
+      line-height: 1.65;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.55), 0 14px 34px rgba(45,58,46,0.08);
+      transition: border-color 180ms ease, box-shadow 180ms ease, background 180ms ease;
+    }
+
+    .typed-wish-input:focus {
+      border-color: rgba(74,103,65,0.42);
+      background: #fff;
+      box-shadow: inset 0 0 0 1px rgba(135,168,120,0.22), 0 16px 40px rgba(74,103,65,0.13);
+    }
+
+    .typed-wish-helper {
+      color: var(--text-soft);
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+
+    .typed-wish-preview {
+      margin-top: 16px;
+      padding: 16px;
+      border-radius: 22px;
+      background: rgba(135,168,120,0.13);
+      border: 1px solid rgba(74,103,65,0.13);
+      color: var(--accent);
+      line-height: 1.7;
+      font-weight: 760;
+    }
+
+    .typed-wish-preview span {
+      display: block;
+      margin-top: 8px;
+      color: var(--dark);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 1.1rem;
+      font-weight: 500;
+    }
+
+    /* Animated story characters */
+    .character {
+      position: absolute;
+      z-index: 9;
+      width: 72px;
+      height: 132px;
+      transform-origin: bottom center;
+      pointer-events: none;
+    }
+
+    .character .head {
+      position: absolute;
+      left: 50%;
+      top: 0;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: #f2c7a7;
+      transform: translateX(-50%);
+      box-shadow: inset -5px -4px 0 rgba(120, 80, 55, 0.09);
+      z-index: 3;
+    }
+
+    .character .hair {
+      position: absolute;
+      left: 50%;
+      top: -4px;
+      width: 52px;
+      height: 54px;
+      border-radius: 50% 50% 42% 42%;
+      background: #33251f;
+      transform: translateX(-50%);
+      z-index: 2;
+    }
+
+    .character .hair::after {
+      content: "";
+      position: absolute;
+      left: 5px;
+      top: 30px;
+      width: 18px;
+      height: 44px;
+      border-radius: 999px;
+      background: #33251f;
+      transform: rotate(10deg);
+    }
+
+    .character .face {
+      position: absolute;
+      left: 50%;
+      top: 18px;
+      width: 24px;
+      height: 9px;
+      transform: translateX(-50%);
+      z-index: 4;
+    }
+
+    .character .face::before,
+    .character .face::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: #2d201a;
+    }
+
+    .character .face::before { left: 3px; }
+    .character .face::after { right: 3px; }
+
+    .character .smile {
+      position: absolute;
+      left: 50%;
+      top: 28px;
+      width: 14px;
+      height: 8px;
+      border-bottom: 2px solid rgba(45,32,26,0.72);
+      border-radius: 0 0 999px 999px;
+      transform: translateX(-50%);
+      z-index: 4;
+    }
+
+    .character .body {
+      position: absolute;
+      left: 50%;
+      top: 43px;
+      width: 48px;
+      height: 58px;
+      border-radius: 22px 22px 16px 16px;
+      transform: translateX(-50%);
+      z-index: 2;
+      box-shadow: inset -6px -7px 0 rgba(45,58,46,0.08);
+    }
+
+    .character .arm {
+      position: absolute;
+      top: 52px;
+      width: 13px;
+      height: 46px;
+      border-radius: 999px;
+      background: #f2c7a7;
+      z-index: 1;
+      transform-origin: top center;
+    }
+
+    .character .arm.left { left: 8px; transform: rotate(18deg); }
+    .character .arm.right { right: 8px; transform: rotate(-18deg); }
+
+    .character .leg {
+      position: absolute;
+      top: 95px;
+      width: 14px;
+      height: 42px;
+      border-radius: 999px;
+      background: #395437;
+      z-index: 1;
+      transform-origin: top center;
+    }
+
+    .character .leg.left { left: 20px; }
+    .character .leg.right { right: 20px; }
+
+    .girl-character {
+      left: 19%;
+      bottom: 23%;
+      transform: scale(0.92);
+    }
+
+    .girl-character .body {
+      background: linear-gradient(180deg, #f7e9c9, #d8e5ca);
+    }
+
+    .girl-character.sitting {
+      height: 118px;
+      bottom: 27%;
+      transform: scale(0.92) rotate(-1deg);
+    }
+
+    .girl-character.sitting .leg {
+      top: 91px;
+      height: 34px;
+      background: #f7e9c9;
+    }
+
+    .girl-character.sitting .leg.left {
+      transform: rotate(74deg);
+      left: 26px;
+    }
+
+    .girl-character.sitting .leg.right {
+      transform: rotate(105deg);
+      right: 16px;
+    }
+
+    .girl-character.walking .leg.left {
+      animation: stepLeft 520ms ease-in-out infinite;
+    }
+
+    .girl-character.walking .leg.right {
+      animation: stepRight 520ms ease-in-out infinite;
+    }
+
+    @keyframes stepLeft {
+      0%, 100% { transform: rotate(10deg); }
+      50% { transform: rotate(-18deg); }
+    }
+
+    @keyframes stepRight {
+      0%, 100% { transform: rotate(-10deg); }
+      50% { transform: rotate(18deg); }
+    }
+
+    .door-story-stage .girl-character {
+      left: 17%;
+      bottom: 24%;
+    }
+
+    .door-story-stage.door-action .girl-character {
+      animation: girlToDoor 2.25s ease forwards;
+    }
+
+    @keyframes girlToDoor {
+      0% {
+        left: 17%;
+        bottom: 24%;
+        transform: scale(0.9);
+      }
+      38% {
+        left: 45%;
+        bottom: 12%;
+        transform: scale(0.96);
+      }
+      100% {
+        left: 70%;
+        bottom: 12%;
+        transform: scale(1);
+      }
+    }
+
+    .door-story-stage.door-action .girl-character .leg.left {
+      animation: stepLeft 520ms ease-in-out infinite;
+    }
+
+    .door-story-stage.door-action .girl-character .leg.right {
+      animation: stepRight 520ms ease-in-out infinite;
+    }
+
+    .boy-character {
+      right: -10%;
+      bottom: 11%;
+      opacity: 0;
+      transform: scale(1);
+      transition: opacity 500ms ease;
+    }
+
+    .boy-character .hair {
+      height: 35px;
+      border-radius: 55% 55% 42% 42%;
+      background: #2b211d;
+    }
+
+    .boy-character .hair::after {
+      display: none;
+    }
+
+    .boy-character .body {
+      background: linear-gradient(180deg, #4A6741, #2D3A2E);
+    }
+
+    .boy-character .leg {
+      background: #28342a;
+    }
+
+    .boy-character .arm.left {
+      transform: rotate(28deg);
+    }
+
+    .boy-character .arm.right {
+      transform: rotate(-52deg);
+      right: 3px;
+      top: 55px;
+    }
+
+    .cake-held {
+      position: absolute;
+      left: -26px;
+      top: 62px;
+      width: 62px;
+      height: 38px;
+      border-radius: 14px 14px 10px 10px;
+      background:
+        linear-gradient(90deg, transparent 44%, rgba(255,255,255,0.82) 44% 56%, transparent 56%),
+        linear-gradient(180deg, #fff5df, #C8D9B8);
+      border: 2px solid rgba(255,255,255,0.72);
+      box-shadow: 0 12px 22px rgba(45,58,46,0.18);
+      z-index: 8;
+    }
+
+    .cake-held::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: -20px;
+      width: 5px;
+      height: 20px;
+      border-radius: 999px;
+      background: #ffffff;
+      transform: translateX(-50%);
+      box-shadow: -14px 4px 0 #ffffff, 14px 4px 0 #ffffff;
+    }
+
+    .cake-held::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: -31px;
+      width: 12px;
+      height: 18px;
+      border-radius: 70% 70% 55% 55%;
+      background: radial-gradient(circle at 50% 66%, #fff7b0 0 22%, #ffd166 35%, #f59f00 68%, transparent 70%);
+      transform: translateX(-50%);
+      filter: drop-shadow(0 0 8px rgba(255, 209, 102, 0.9));
+      box-shadow: -14px 4px 0 -2px #ffd166, 14px 4px 0 -2px #ffd166;
+      animation: flameDance 650ms ease-in-out infinite alternate;
+    }
+
+    .door-story-stage.door-action .boy-character {
+      animation: boyEnter 1.45s ease 1.85s forwards;
+    }
+
+    @keyframes boyEnter {
+      0% {
+        right: -10%;
+        opacity: 0;
+        transform: scale(0.96);
+      }
+      100% {
+        right: 3%;
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .surprise-bubble {
+      position: absolute;
+      right: 12%;
+      top: 16%;
+      z-index: 16;
+      max-width: 260px;
+      padding: 13px 16px;
+      border-radius: 22px 22px 22px 4px;
+      background: rgba(255,255,255,0.9);
+      color: var(--accent);
+      font-weight: 950;
+      box-shadow: 0 16px 42px rgba(45,58,46,0.16);
+      opacity: 0;
+      transform: translateY(10px) scale(0.96);
+    }
+
+    .door-story-stage.door-action .surprise-bubble {
+      animation: bubblePop 650ms ease 2.95s forwards;
+    }
+
+    @keyframes bubblePop {
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .auto-note {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 14px;
+      margin-top: 12px;
+      border-radius: 999px;
+      background: rgba(135,168,120,0.14);
+      color: var(--accent);
+      font-weight: 900;
+      font-size: 0.9rem;
+    }
+
+
+    .door-story-stage.peek-action .girl-character {
+      animation: girlPeekDoor 2.05s ease forwards;
+    }
+
+    @keyframes girlPeekDoor {
+      0% {
+        left: 17%;
+        bottom: 24%;
+        transform: scale(0.9);
+      }
+      45% {
+        left: 43%;
+        bottom: 12%;
+        transform: scale(0.95);
+      }
+      100% {
+        left: 66%;
+        bottom: 12%;
+        transform: scale(0.98) rotate(-2deg);
+      }
+    }
+
+    .door.peek {
+      transform: perspective(900px) rotateY(-9deg);
+      filter: brightness(1.04);
+    }
+
+    .door-story-stage.after-peek.door-action .girl-character {
+      animation: girlPeekReact 900ms ease forwards;
+    }
+
+    @keyframes girlPeekReact {
+      0% {
+        left: 66%;
+        bottom: 12%;
+        transform: scale(0.98) rotate(-2deg);
+      }
+      42% {
+        left: 65%;
+        bottom: 12%;
+        transform: scale(1.02) rotate(-7deg);
+      }
+      100% {
+        left: 63%;
+        bottom: 12%;
+        transform: scale(1) rotate(0deg);
+      }
+    }
+
+    .meisya-bubble {
+      position: absolute;
+      left: 62%;
+      top: 27%;
+      z-index: 16;
+      padding: 10px 13px;
+      border-radius: 20px 20px 4px 20px;
+      background: rgba(255,255,255,0.92);
+      color: var(--accent);
+      font-weight: 950;
+      box-shadow: 0 16px 42px rgba(45,58,46,0.14);
+      opacity: 0;
+      transform: translateY(10px) scale(0.96);
+      pointer-events: none;
+    }
+
+    .door-story-stage.door-action .meisya-bubble {
+      animation: bubblePop 520ms ease 2.15s forwards;
+    }
+
+    .door-story-stage.cake-clickable .boy-character {
+      pointer-events: auto;
+    }
+
+    .door-story-stage.cake-clickable .cake-held {
+      pointer-events: auto;
+      cursor: pointer;
+      animation: cakePulse 1.15s ease-in-out infinite;
+    }
+
+    @keyframes cakePulse {
+      0%, 100% {
+        transform: translateY(0) scale(1);
+        filter: drop-shadow(0 0 0 rgba(255,245,223,0));
+      }
+      50% {
+        transform: translateY(-3px) scale(1.06);
+        filter: drop-shadow(0 0 12px rgba(255,245,223,0.95));
+      }
+    }
+
+
+    /* V6: puzzle, response, secret letter, final card */
+    .code-puzzle {
+      width: min(420px, 100%);
+      display: grid;
+      gap: 12px;
+      padding: 16px;
+      border-radius: 24px;
+      background: rgba(255,255,255,0.72);
+      border: 1px solid rgba(255,255,255,0.78);
+      box-shadow: 0 16px 42px rgba(45,58,46,0.12);
+    }
+
+    .code-puzzle-label {
+      color: var(--accent);
+      font-weight: 950;
+      font-size: 0.9rem;
+    }
+
+    .code-input-row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .code-input {
+      flex: 1;
+      min-width: 130px;
+      height: 52px;
+      border-radius: 18px;
+      border: 1px solid rgba(74,103,65,0.18);
+      background: rgba(255,255,255,0.94);
+      color: var(--accent);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 1.65rem;
+      text-align: center;
+      letter-spacing: 0.22em;
+      outline: none;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.55);
+    }
+
+    .code-input:focus {
+      border-color: rgba(74,103,65,0.45);
+      box-shadow: 0 14px 34px rgba(74,103,65,0.12);
+    }
+
+    .code-hint {
+      font-size: 0.86rem;
+      line-height: 1.55;
+      color: var(--text-soft);
+    }
+
+    .reaction-options {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 22px;
+    }
+
+    .reaction-card {
+      min-height: 92px;
+      padding: 16px;
+      border-radius: 22px;
+      background: rgba(255,255,255,0.82);
+      border: 1px solid rgba(74,103,65,0.13);
+      box-shadow: 0 12px 34px rgba(45,58,46,0.08);
+      color: var(--dark);
+      text-align: left;
+      line-height: 1.45;
+      font-weight: 850;
+      transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
+    }
+
+    .reaction-card:hover {
+      transform: translateY(-3px);
+      background: #fff;
+      border-color: rgba(74,103,65,0.34);
+    }
+
+    .secret-letter {
+      position: relative;
+      width: min(780px, 92%);
+      max-height: 92%;
+      overflow: auto;
+      padding: clamp(28px, 6vw, 56px);
+      border-radius: 36px;
+      background:
+        radial-gradient(circle at top left, rgba(200,217,184,0.35), transparent 32%),
+        linear-gradient(145deg, rgba(255,255,255,0.92), rgba(255,245,223,0.82));
+      border: 1px solid rgba(255,255,255,0.86);
+      box-shadow: 0 28px 90px rgba(45,58,46,0.16);
+      z-index: 3;
+    }
+
+    .secret-letter h1 {
+      font-family: Georgia, "Times New Roman", serif;
+      color: var(--accent);
+      font-size: clamp(2rem, 6vw, 4rem);
+      line-height: 1.08;
+      letter-spacing: -0.045em;
+      margin-bottom: 18px;
+    }
+
+    .secret-letter p {
+      line-height: 1.86;
+      color: rgba(45,58,46,0.88);
+      margin: 14px 0;
+      font-size: clamp(0.98rem, 2.4vw, 1.08rem);
+    }
+
+    .secret-letter .stamp {
+      display: inline-flex;
+      margin-bottom: 18px;
+      padding: 8px 13px;
+      border-radius: 999px;
+      background: rgba(135,168,120,0.14);
+      color: var(--accent);
+      font-weight: 950;
+      letter-spacing: 0.08em;
+      font-size: 0.76rem;
+      text-transform: uppercase;
+    }
+
+    .final-card {
+      width: min(720px, 92%);
+      aspect-ratio: 4 / 5;
+      min-height: 560px;
+      border-radius: 42px;
+      position: relative;
+      overflow: hidden;
+      display: grid;
+      place-items: center;
+      padding: clamp(28px, 6vw, 56px);
+      background:
+        radial-gradient(circle at 18% 16%, rgba(255,255,255,0.72), transparent 28%),
+        radial-gradient(circle at 82% 80%, rgba(255,245,223,0.96), transparent 32%),
+        linear-gradient(145deg, #F5F7F2, #D8E5CA 62%, #87A878);
+      box-shadow: 0 34px 110px rgba(45,58,46,0.22);
+      border: 1px solid rgba(255,255,255,0.86);
+      text-align: center;
+      z-index: 3;
+    }
+
+    .final-card::before,
+    .final-card::after {
+      content: "";
+      position: absolute;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.28);
+      filter: blur(2px);
+    }
+
+    .final-card::before {
+      width: 260px;
+      height: 260px;
+      left: -110px;
+      top: -90px;
+    }
+
+    .final-card::after {
+      width: 220px;
+      height: 220px;
+      right: -90px;
+      bottom: -80px;
+    }
+
+    .final-card-content {
+      position: relative;
+      z-index: 2;
+      display: grid;
+      justify-items: center;
+      gap: 16px;
+    }
+
+    .final-card .small {
+      color: var(--accent);
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      font-size: 0.78rem;
+      font-weight: 950;
+    }
+
+    .final-card .big {
+      font-family: Georgia, "Times New Roman", serif;
+      color: var(--accent);
+      font-size: clamp(2.8rem, 10vw, 6.4rem);
+      line-height: 0.94;
+      letter-spacing: -0.07em;
+    }
+
+    .final-card .name {
+      font-family: Georgia, "Times New Roman", serif;
+      color: var(--dark);
+      font-size: clamp(1.65rem, 5vw, 3.2rem);
+      line-height: 1.1;
+    }
+
+    .final-card .quote {
+      max-width: 520px;
+      line-height: 1.8;
+      color: rgba(45,58,46,0.86);
+      font-weight: 720;
+    }
+
+    .final-card .from {
+      margin-top: 8px;
+      color: var(--accent);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 1.25rem;
+    }
+
+    .final-card-actions {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 22px;
+      position: relative;
+      z-index: 4;
+    }
+
+
+    /* V7 patch: Raihan haircut + safer interaction pacing */
+    .boy-character .hair {
+      top: -5px;
+      width: 48px;
+      height: 29px;
+      border-radius: 48% 52% 34% 34%;
+      background: linear-gradient(180deg, #1f1714, #3a2b25);
+      box-shadow: inset -7px -3px 0 rgba(0,0,0,0.18);
+    }
+
+    .boy-character .hair::before {
+      content: "";
+      position: absolute;
+      left: 4px;
+      top: 18px;
+      width: 40px;
+      height: 14px;
+      border-radius: 0 0 45% 45%;
+      background: #1f1714;
+      transform: rotate(-4deg);
+    }
+
+    .boy-character .hair::after {
+      display: none !important;
+    }
+
+    .boy-character .head {
+      top: 4px;
+    }
+
+    .boy-character .face {
+      top: 21px;
+    }
+
+    .boy-character .smile {
+      top: 31px;
+    }
+
+
+    /* V8 patch: non-spoiler locked object + exact cake click */
+    .gift-box {
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.18), transparent 36%),
+        linear-gradient(180deg, #8e7657, #6f573b) !important;
+      border: 2px solid rgba(255,245,223,0.38);
+      box-shadow: 0 12px 25px rgba(74,103,65,0.18), inset 0 -8px 0 rgba(45,32,20,0.14) !important;
+    }
+
+    .gift-box::before {
+      left: 8px !important;
+      right: 8px !important;
+      top: -10px !important;
+      height: 16px !important;
+      border-radius: 12px 12px 6px 6px !important;
+      background: linear-gradient(180deg, #9b8060, #745a3d) !important;
+      box-shadow: inset 0 -3px 0 rgba(45,32,20,0.16) !important;
+    }
+
+    .gift-box::after {
+      content: "?" !important;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 1.45rem !important;
+      color: #fff5df;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.18);
+    }
+
+    .cake-held.click-ready {
+      outline: 3px solid rgba(255,245,223,0.85);
+      outline-offset: 4px;
+    }
+
+    .cake-click-hint {
+      position: absolute;
+      right: 6%;
+      bottom: 31%;
+      z-index: 18;
+      padding: 9px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.92);
+      color: var(--accent);
+      font-size: 0.78rem;
+      font-weight: 950;
+      box-shadow: 0 14px 34px rgba(45,58,46,0.14);
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(8px);
+    }
+
+    .door-story-stage.cake-clickable .cake-click-hint {
+      animation: cakeHintPop 520ms ease forwards, floatTip 1.8s ease-in-out 520ms infinite;
+    }
+
+    @keyframes cakeHintPop {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+
+    /* V10 patch: door approach, keyhole peek, better pacing */
+    .door-story-stage.approach-door .girl-character {
+      animation: girlApproachDoor 2.4s ease forwards;
+    }
+
+    @keyframes girlApproachDoor {
+      0% {
+        left: 17%;
+        bottom: 24%;
+        transform: scale(0.9);
+      }
+      42% {
+        left: 42%;
+        bottom: 12%;
+        transform: scale(0.96);
+      }
+      100% {
+        left: 63%;
+        bottom: 12%;
+        transform: scale(1);
+      }
+    }
+
+    .door-story-stage.approach-door .girl-character .leg.left {
+      animation: stepLeft 520ms ease-in-out infinite;
+    }
+
+    .door-story-stage.approach-door .girl-character .leg.right {
+      animation: stepRight 520ms ease-in-out infinite;
+    }
+
+    .keyhole-view {
+      position: absolute;
+      inset: 0;
+      z-index: 30;
+      display: grid;
+      place-items: center;
+      opacity: 0;
+      pointer-events: none;
+      background: rgba(0,0,0,0.34);
+      backdrop-filter: blur(2px);
+      transition: opacity 420ms ease;
+    }
+
+    .door-story-stage.peek-action .keyhole-view {
+      opacity: 1;
+      animation: keyholeIn 650ms ease 1.55s both;
+    }
+
+    @keyframes keyholeIn {
+      from {
+        opacity: 0;
+        transform: scale(0.98);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .keyhole-shape {
+      position: relative;
+      width: min(430px, 78vw);
+      height: min(430px, 78vw);
+      background:
+        radial-gradient(circle at 52% 42%, rgba(255,245,223,0.96), rgba(255,245,223,0.6) 28%, rgba(74,103,65,0.45) 56%, rgba(0,0,0,0.94) 57%),
+        linear-gradient(180deg, #f5f7f2, #c8d9b8);
+      clip-path: path("M 215 20 C 292 20 354 82 354 158 C 354 210 325 255 282 279 L 326 405 L 104 405 L 148 279 C 105 255 76 210 76 158 C 76 82 138 20 215 20 Z");
+      box-shadow: 0 24px 80px rgba(0,0,0,0.42);
+      overflow: hidden;
+      border-radius: 38% 38% 24% 24%;
+    }
+
+    .keyhole-room {
+      position: absolute;
+      inset: 12%;
+      border-radius: 38% 38% 22% 22%;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 55% 25%, rgba(255,245,223,0.95), transparent 24%),
+        linear-gradient(180deg, #eaf2e4 0%, #c8d9b8 58%, #9eb58d 59%, #7e996f 100%);
+    }
+
+    .peek-silhouette {
+      position: absolute;
+      right: 22%;
+      bottom: 18%;
+      width: 76px;
+      height: 160px;
+      opacity: 0.88;
+      animation: peekShadowMove 2.6s ease-in-out infinite;
+    }
+
+    @keyframes peekShadowMove {
+      0%, 100% { transform: translateX(0); }
+      50% { transform: translateX(-8px); }
+    }
+
+    .peek-silhouette::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 0;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: #2d3a2e;
+      transform: translateX(-50%);
+    }
+
+    .peek-silhouette::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 45px;
+      width: 58px;
+      height: 86px;
+      border-radius: 28px 28px 18px 18px;
+      background: #2d3a2e;
+      transform: translateX(-50%);
+    }
+
+    .peek-cake {
+      position: absolute;
+      left: -20px;
+      top: 82px;
+      width: 72px;
+      height: 43px;
+      border-radius: 16px 16px 11px 11px;
+      background:
+        linear-gradient(90deg, transparent 44%, rgba(255,255,255,0.9) 44% 56%, transparent 56%),
+        linear-gradient(180deg, #fff5df, #87A878);
+      border: 2px solid rgba(255,255,255,0.82);
+      box-shadow: 0 12px 24px rgba(45,58,46,0.26);
+      z-index: 3;
+    }
+
+    .peek-cake::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: -24px;
+      width: 5px;
+      height: 22px;
+      border-radius: 999px;
+      background: #ffffff;
+      transform: translateX(-50%);
+      box-shadow: -16px 5px 0 #ffffff, 16px 5px 0 #ffffff;
+    }
+
+    .peek-cake::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: -37px;
+      width: 13px;
+      height: 20px;
+      border-radius: 70% 70% 55% 55%;
+      background: radial-gradient(circle at 50% 66%, #fff7b0 0 22%, #ffd166 35%, #f59f00 68%, transparent 70%);
+      transform: translateX(-50%);
+      filter: drop-shadow(0 0 11px rgba(255,209,102,0.95));
+      box-shadow: -16px 5px 0 -2px #ffd166, 16px 5px 0 -2px #ffd166;
+      animation: flameDance 650ms ease-in-out infinite alternate;
+    }
+
+    .keyhole-caption {
+      position: absolute;
+      left: 50%;
+      bottom: 7%;
+      transform: translateX(-50%);
+      width: min(360px, 82vw);
+      padding: 10px 13px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.92);
+      color: var(--accent);
+      font-size: 0.82rem;
+      font-weight: 900;
+      text-align: center;
+      box-shadow: 0 14px 40px rgba(0,0,0,0.22);
+    }
+
+
+    /* V11: final video outro */
+    .video-outro-wrap {
+      width: min(860px, 94%);
+      padding: clamp(24px, 5vw, 44px);
+      border-radius: 36px;
+      background: rgba(255,255,255,0.78);
+      border: 1px solid rgba(255,255,255,0.84);
+      box-shadow: 0 28px 90px rgba(45,58,46,0.17);
+      backdrop-filter: blur(18px);
+      text-align: center;
+      position: relative;
+      z-index: 3;
+    }
+
+    .video-outro-wrap h1 {
+      font-family: Georgia, "Times New Roman", serif;
+      color: var(--accent);
+      font-size: clamp(2rem, 7vw, 4.6rem);
+      line-height: 1.08;
+      letter-spacing: -0.055em;
+      margin-bottom: 14px;
+    }
+
+    .video-outro-wrap p {
+      max-width: 620px;
+      margin: 0 auto 22px;
+      color: rgba(45,58,46,0.84);
+      line-height: 1.8;
+      font-weight: 720;
+    }
+
+    .video-frame {
+      width: 100%;
+      border-radius: 28px;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 50% 30%, rgba(255,245,223,0.2), transparent 38%),
+        linear-gradient(145deg, #162116, #2d3a2e);
+      box-shadow: 0 24px 70px rgba(22,33,22,0.24);
+      border: 1px solid rgba(255,255,255,0.22);
+    }
+
+    .video-frame video {
+      display: block;
+      width: 100%;
+      max-height: 68vh;
+      background: #10170f;
+    }
+
+    .video-note {
+      margin-top: 14px;
+      font-size: 0.84rem;
+      color: var(--text-soft);
+      line-height: 1.6;
+    }
+
+    .video-actions {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 20px;
+    }
+
+
+    /* V12 patch: peek from current door position, not from bed */
+    .door-story-stage.peek-from-door.peek-action .girl-character {
+      animation: girlPeekFromDoor 900ms ease forwards;
+    }
+
+    @keyframes girlPeekFromDoor {
+      0% {
+        left: 63%;
+        bottom: 12%;
+        transform: scale(1) rotate(0deg);
+      }
+      55% {
+        left: 64%;
+        bottom: 12%;
+        transform: scale(1.02) rotate(-5deg);
+      }
+      100% {
+        left: 66%;
+        bottom: 12%;
+        transform: scale(0.98) rotate(-2deg);
+      }
+    }
+
+    @media (max-width: 820px) {
+      .door-story-stage.peek-from-door.peek-action .girl-character {
+        animation: girlPeekFromDoorMobile 900ms ease forwards;
+      }
+
+      @keyframes girlPeekFromDoorMobile {
+        0% { left: 56%; bottom: 12%; transform: scale(0.92) rotate(0deg); }
+        55% { left: 57%; bottom: 12%; transform: scale(0.94) rotate(-5deg); }
+        100% { left: 58%; bottom: 12%; transform: scale(0.9) rotate(-2deg); }
+      }
+    }
+
+    @media (max-width: 820px) {
+      .video-outro-wrap {
+        width: 100%;
+        border-radius: 28px;
+        padding: 20px;
+      }
+
+      .video-frame {
+        border-radius: 22px;
+      }
+
+      .video-frame video {
+        max-height: 58vh;
+      }
+    }
+
+    @media (max-width: 820px) {
+      .door-story-stage.approach-door .girl-character {
+        animation: girlApproachDoorMobile 2.4s ease forwards;
+      }
+
+      @keyframes girlApproachDoorMobile {
+        0% { left: 16%; bottom: 23%; transform: scale(0.82); }
+        45% { left: 40%; bottom: 12%; transform: scale(0.88); }
+        100% { left: 56%; bottom: 12%; transform: scale(0.92); }
+      }
+
+      .keyhole-shape {
+        width: min(330px, 82vw);
+        height: min(330px, 82vw);
+      }
+
+      .peek-silhouette {
+        right: 19%;
+        bottom: 16%;
+        transform: scale(0.82);
+      }
+
+      .keyhole-caption {
+        bottom: 5%;
+        font-size: 0.78rem;
+      }
+    }
+
+    @media (max-width: 820px) {
+      .reaction-options {
+        grid-template-columns: 1fr;
+      }
+
+      .final-card {
+        aspect-ratio: auto;
+        min-height: 520px;
+      }
+
+      .code-input-row {
+        display: grid;
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 820px) {
+
+
+      .door-story-stage.peek-action .girl-character {
+        animation: girlPeekDoorMobile 2.05s ease forwards;
+      }
+
+      @keyframes girlPeekDoorMobile {
+        0% { left: 16%; bottom: 23%; transform: scale(0.82); }
+        45% { left: 42%; bottom: 12%; transform: scale(0.88); }
+        100% { left: 58%; bottom: 12%; transform: scale(0.9) rotate(-2deg); }
+      }
+
+      .door-story-stage.after-peek.door-action .girl-character {
+        animation: girlPeekReactMobile 900ms ease forwards;
+      }
+
+      @keyframes girlPeekReactMobile {
+        0% { left: 58%; bottom: 12%; transform: scale(0.9) rotate(-2deg); }
+        42% { left: 57%; bottom: 12%; transform: scale(0.94) rotate(-7deg); }
+        100% { left: 55%; bottom: 12%; transform: scale(0.92) rotate(0deg); }
+      }
+
+      .meisya-bubble {
+        left: 52%;
+        top: 31%;
+        font-size: 0.82rem;
+      }
+
+      .character {
+        width: 56px;
+        height: 106px;
+      }
+
+      .character .head {
+        width: 34px;
+        height: 34px;
+      }
+
+      .character .hair {
+        width: 42px;
+        height: 44px;
+      }
+
+      .character .body {
+        top: 35px;
+        width: 38px;
+        height: 48px;
+      }
+
+      .character .arm {
+        top: 42px;
+        height: 36px;
+      }
+
+      .character .leg {
+        top: 78px;
+        height: 34px;
+      }
+
+      .girl-character.sitting {
+        bottom: 25%;
+      }
+
+      .door-story-stage.door-action .girl-character {
+        animation: girlToDoorMobile 2.25s ease forwards;
+      }
+
+      @keyframes girlToDoorMobile {
+        0% { left: 16%; bottom: 23%; transform: scale(0.82); }
+        45% { left: 42%; bottom: 12%; transform: scale(0.88); }
+        100% { left: 62%; bottom: 12%; transform: scale(0.9); }
+      }
+
+      .door-story-stage.door-action .boy-character {
+        animation: boyEnterMobile 1.45s ease 1.85s forwards;
+      }
+
+      @keyframes boyEnterMobile {
+        0% { right: -16%; opacity: 0; transform: scale(0.86); }
+        100% { right: 1%; opacity: 1; transform: scale(0.88); }
+      }
+
+      .surprise-bubble {
+        right: 7%;
+        top: 18%;
+        max-width: 210px;
+        font-size: 0.86rem;
+      }
+
+      .scene {
+        padding: 14px;
+        padding-top: 68px;
+      }
+
+      .scene-inner {
+        min-height: calc(100vh - 82px);
+      }
+
+      .stage {
+        min-height: 450px;
+        border-radius: 28px;
+      }
+
+      .dialog {
+        border-radius: 26px;
+        padding: 18px;
+      }
+
+      .choices {
+        display: grid;
+        grid-template-columns: 1fr;
+      }
+
+      .choice,
+      .btn {
+        width: 100%;
+      }
+
+      .clue-panel {
+        top: 12px;
+        left: 12px;
+        width: calc(100% - 24px);
+      }
+
+      .bed {
+        left: 2%;
+        width: 39%;
+        height: 20%;
+      }
+
+      .window {
+        left: 6%;
+        top: 14%;
+        width: 30%;
+        height: 22%;
+      }
+
+      .desk {
+        left: 39%;
+        width: 28%;
+        bottom: 17%;
+      }
+
+      .door {
+        right: 4%;
+        width: 25%;
+        height: 56%;
+      }
+
+      .door-light {
+        right: 1%;
+        width: 29%;
+        height: 56%;
+      }
+
+      .calendar {
+        left: 42%;
+        top: 18%;
+        width: 74px;
+        height: 92px;
+      }
+
+      .calendar .date {
+        font-size: 1.9rem;
+        margin-top: 10px;
+      }
+
+      .photo {
+        left: 60%;
+        top: 18%;
+        width: 72px;
+        height: 90px;
+      }
+
+      .gift-box {
+        right: 30%;
+        bottom: 18%;
+        width: 56px;
+        height: 50px;
+      }
+
+      .small-box {
+        left: 53%;
+        bottom: 37%;
+      }
+
+      .switch {
+        left: 71%;
+        top: 45%;
+      }
+
+      .wish-options,
+      .wish-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .cake-stage-small {
+        height: 315px;
+      }
+
+      .cake {
+        height: 210px;
+      }
+
+      .candles {
+        bottom: 210px;
+        width: 90vw;
+        gap: 1.5px;
+      }
+
+      .layer.bottom { height: 82px; }
+      .layer.middle { bottom: 96px; height: 68px; }
+      .layer.top { bottom: 160px; height: 54px; }
+
+      .topbar {
+        top: 10px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .topbar-label {
+        display: none;
+      }
+
+      .stage {
+        min-height: 420px;
+      }
+
+      .dialog-text {
+        min-height: 96px;
+      }
+
+      .desk-leg {
+        height: 42px;
+        bottom: -34px;
+      }
+
+      .hanging-lamp::after {
+        width: 72px;
+        height: 38px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="game">
+    <canvas id="confettiCanvas"></canvas>
+    <div class="topbar" id="topbar">
+      <span class="topbar-label">A Little Night Before 23</span>
+      <div class="progress-wrap" aria-label="Progress cerita">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+      <button class="sound-btn" id="soundBtn" title="Sound">♪</button>
+    </div>
+
+    <div class="toast" id="toast"></div>
+    <div class="music-pill" id="musicPill">♪ Happy Birthday untuk Meisya</div>
+
+    <section class="scene active" id="sceneDark">
+      <div class="scene-inner">
+        <div class="stage dark-stage">
+          <div class="dark-glow"></div>
+        </div>
+        <div class="dialog">
+          <div class="speaker" id="speakerDark">Narasi</div>
+          <div class="dialog-text" id="textDark"></div>
+          <div class="choices" id="choicesDark"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="scene" id="sceneRoom">
+      <div class="scene-inner">
+        <div class="stage room-stage" id="roomStage">
+          <div class="clue-panel">
+            <div class="clue-title">PETUNJUK YANG DITEMUKAN</div>
+            <div class="clue-list">
+              <div class="clue-item"><span class="check" id="check-calendar">?</span><span>Petunjuk dari kalender</span></div>
+              <div class="clue-item"><span class="check" id="check-photo">?</span><span>Petunjuk dari foto kecil</span></div>
+              <div class="clue-item"><span class="check" id="check-letter">?</span><span>Petunjuk dari kotak surat</span></div>
+            </div>
+          </div>
+
+          <div class="hanging-lamp"></div>
+          <div class="wall-line"></div>
+          <div class="floor-rug"></div>
+          <div class="window clickable" id="windowObj" title="Jendela"><span class="moon"></span></div>
+          <div class="bed"></div>
+          <div class="desk"><span class="desk-leg left"></span><span class="desk-leg right"></span></div>
+          <div class="calendar clickable" id="calendarObj" title="Kalender">
+            <div class="cal-head">NEW AGE</div>
+            <div class="date">23</div>
+            <div class="month">MEISYA DAY</div>
+          </div>
+          <div class="photo clickable" id="photoObj" title="Foto kecil"></div>
+          <div class="small-box clickable" id="letterObj" title="Kotak kecil"></div>
+          <div class="gift-box clickable" id="giftObj" title="Laci kecil"></div>
+          <div class="switch clickable" id="switchObj" title="Saklar"></div>
+
+          <div class="character girl-character sitting" id="girlRoom" aria-hidden="true">
+            <span class="hair"></span>
+            <span class="head"></span>
+            <span class="face"></span>
+            <span class="smile"></span>
+            <span class="body"></span>
+            <span class="arm left"></span>
+            <span class="arm right"></span>
+            <span class="leg left"></span>
+            <span class="leg right"></span>
+          </div>
+          <div class="door clickable" id="doorObj" title="Pintu"></div>
+          <div class="door-light"></div>
+
+          <div class="hotspot-tip" id="tipCalendar" style="left: 47.5%; top: 12%;">klik kalender</div>
+          <div class="hotspot-tip" id="tipPhoto" style="left: 60%; top: 12%;">lihat foto</div>
+          <div class="hotspot-tip" id="tipLetter" style="left: 53.5%; bottom: 49%;">buka kotak kecil</div>
+        </div>
+
+        <div class="dialog">
+          <div class="speaker" id="speakerRoom">Narasi</div>
+          <div class="dialog-text" id="textRoom"></div>
+          <div class="choices" id="choicesRoom"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="scene" id="sceneDoor">
+      <div class="scene-inner">
+        <div class="stage room-stage door-story-stage" id="doorStoryStage">
+          <div class="hanging-lamp"></div>
+          <div class="wall-line"></div>
+          <div class="floor-rug"></div>
+          <div class="window"><span class="moon"></span></div>
+          <div class="bed"></div>
+          <div class="desk"><span class="desk-leg left"></span><span class="desk-leg right"></span></div>
+          <div class="calendar">
+            <div class="cal-head">NEW AGE</div>
+            <div class="date">23</div>
+            <div class="month">MEISYA DAY</div>
+          </div>
+          <div class="photo"></div>
+          <div class="small-box"></div>
+          <div class="gift-box"></div>
+
+          <div class="character girl-character sitting" id="girlDoor" aria-hidden="true">
+            <span class="hair"></span>
+            <span class="head"></span>
+            <span class="face"></span>
+            <span class="smile"></span>
+            <span class="body"></span>
+            <span class="arm left"></span>
+            <span class="arm right"></span>
+            <span class="leg left"></span>
+            <span class="leg right"></span>
+          </div>
+
+          <div class="character boy-character" id="boyDoor" aria-hidden="true">
+            <span class="hair"></span>
+            <span class="head"></span>
+            <span class="face"></span>
+            <span class="smile"></span>
+            <span class="body"></span>
+            <span class="arm left"></span>
+            <span class="arm right"></span>
+            <span class="leg left"></span>
+            <span class="leg right"></span>
+            <span class="cake-held"></span>
+          </div>
+
+          <div class="meisya-bubble">Eh...?</div>
+          <div class="surprise-bubble">Surprise, Meisya 🤍</div>
+          <div class="cake-click-hint">klik kuenya 🎂</div>
+
+          <div class="keyhole-view" id="keyholeView" aria-hidden="true">
+            <div class="keyhole-shape">
+              <div class="keyhole-room">
+                <div class="peek-silhouette">
+                  <span class="peek-cake"></span>
+                </div>
+              </div>
+            </div>
+            <div class="keyhole-caption">Dari lubang kunci, terlihat seseorang memegang sesuatu yang menyala...</div>
+          </div>
+          <div class="door knocking" id="doorSceneDoor"></div>
+          <div class="door-light"></div>
+        </div>
+
+        <div class="dialog">
+          <div class="speaker" id="speakerDoor">Narasi</div>
+          <div class="dialog-text" id="textDoor"></div>
+          <div class="choices" id="choicesDoor"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="scene" id="sceneReveal">
+      <div class="scene-inner">
+        <div class="stage surprise-stage">
+          <div class="bunting">
+            <span class="flag"></span><span class="flag"></span><span class="flag"></span><span class="flag"></span><span class="flag"></span><span class="flag"></span><span class="flag"></span><span class="flag"></span><span class="flag"></span>
+          </div>
+
+          <div class="reveal-card">
+            <div class="eyebrow" style="color: var(--accent);">Surprise</div>
+            <div class="reveal-title">Meisya Day 🤍</div>
+            <p class="reveal-sub">
+              Ternyata semua petunjuk kecil tadi membawa kamu ke sini.
+              Ada kue, ada lilin, dan ada doa yang perlu kamu pilih sebelum meniupnya.
+            </p>
+            <div class="cake-area">
+              <div class="cake-stage-small">
+                <div class="cake">
+                  <div class="candles" id="candlesReveal"></div>
+                  <div class="layer top"><span class="icing"></span></div>
+                  <div class="layer middle"><span class="icing"></span></div>
+                  <div class="layer bottom"><span class="icing"></span></div>
+                  <div class="plate"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="dialog">
+          <div class="speaker" id="speakerReveal">Raihan</div>
+          <div class="dialog-text" id="textReveal"></div>
+          <div class="choices" id="choicesReveal"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="scene" id="sceneWish">
+      <div class="scene-inner">
+        <div class="stage surprise-stage">
+          <div class="reveal-card">
+            <div class="eyebrow" style="color: var(--accent);">Make your own wish</div>
+            <div class="reveal-title" style="font-size: clamp(2rem, 6vw, 4rem);">Tulis doamu sendiri 🌙</div>
+            <p class="reveal-sub">
+              Untuk bagian ini, doanya harus datang dari kamu.
+              Tulis satu doa yang paling ingin kamu aminkan sebelum lilinnya tertiup.
+            </p>
+
+            <div class="typed-wish-box">
+              <label class="typed-wish-label" for="typedWishInput">Doa Meisya</label>
+              <textarea
+                class="typed-wish-input"
+                id="typedWishInput"
+                maxlength="260"
+                placeholder="Contoh: Ya Allah, semoga tahun ini aku..."
+              ></textarea>
+              <div class="typed-wish-helper" id="typedWishCounter">0/260 karakter. Tulis dengan pelan, tidak perlu panjang.</div>
+              <div class="typed-wish-preview hidden" id="typedWishPreview">
+                Doamu yang akan ikut diaminkan:
+                <span id="typedWishPreviewText"></span>
+              </div>
+            </div>
+
+            <button class="btn hidden" id="wishContinueBtn" style="margin-top: 22px;">Simpan doa dan lanjut 🤍</button>
+          </div>
+        </div>
+
+        <div class="dialog">
+          <div class="speaker">Narasi</div>
+          <div class="dialog-text" id="textWish">Sebelum meniup lilin, tulis satu doa yang benar-benar kamu inginkan dari hati.</div>
+          <div class="choices"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="scene" id="sceneBlow">
+      <div class="scene-inner">
+        <div class="stage surprise-stage">
+          <div class="reveal-card">
+            <div class="eyebrow" style="color: var(--accent);">23 candles</div>
+            <div class="count-blow" id="blowCount">Tutup mata sebentar...</div>
+
+            <div class="cake-area">
+              <div class="cake-stage-small">
+                <div class="cake">
+                  <div class="candles" id="candlesBlow"></div>
+                  <div class="layer top"><span class="icing"></span></div>
+                  <div class="layer middle"><span class="icing"></span></div>
+                  <div class="layer bottom"><span class="icing"></span></div>
+                  <div class="plate"></div>
+                </div>
+              </div>
+
+              <div class="timer-box hidden" id="timerBox">
+                <div class="timer-circle" id="timerCircle" style="--progress: 100">
+                  <div class="timer-text" id="timerText">5</div>
+                </div>
+<div class="auto-note hidden" id="autoBlowNote"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="dialog">
+          <div class="speaker">Narasi</div>
+          <div class="dialog-text" id="textBlow">Ambil napas pelan-pelan. Semoga doa yang kamu tulis tadi sampai ke tempat terbaik.</div>
+          <div class="choices"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="scene" id="sceneLetter">
+      <div class="scene-inner">
+        <div class="stage ending-stage">
+          <div class="reveal-card letter">
+            <h1>Selamat Ulang Tahun ke-23, Meisya Nur Annisa Maulidina 🌿</h1>
+            <p>
+              Di usia 23 ini, aku cuma berharap kamu semakin dekat dengan hal-hal baik yang selama ini kamu usahakan.
+              Semoga langkahmu dimudahkan, hatimu dikuatkan, dan semua proses yang sedang kamu jalani dibalas dengan hasil yang paling indah.
+            </p>
+            <p>
+              Aku tahu kamu punya banyak rencana, banyak harapan, dan banyak hal yang mungkin tidak selalu mudah dijalani.
+              Tapi aku percaya kamu bisa melewatinya satu per satu, dengan caramu yang pelan tapi kuat.
+            </p>
+            <p>
+              Terima kasih karena sudah jadi seseorang yang berarti buat aku.
+              Terima kasih karena hadir dengan caramu sendiri, yang kadang sederhana, tapi cukup bikin banyak hal terasa lebih hangat.
+            </p>
+            <p id="selectedWishParagraph">
+              Doa yang kamu tulis tadi aku simpan baik-baik. Nanti aku aminkan lagi di surat terakhir.
+            </p>
+            <div class="sign">— dari aku, Raihan Febrian</div>
+          </div>
+        </div>
+
+        <div class="dialog">
+          <div class="speaker">Raihan</div>
+          <div class="dialog-text" id="textLetter"></div>
+          <div class="choices" id="choicesLetter"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="scene" id="sceneWishes">
+      <div class="scene-inner">
+        <div class="stage ending-stage" id="wishesLeafStage">
+          <div class="reveal-card letter">
+            <h2>Doa kecil dari aku untuk kamu 🌙</h2>
+            <p>Setelah kamu menulis doamu sendiri, ini beberapa doa tambahan dari aku untuk kamu.</p>
+
+            <div class="wish-grid">
+              <div class="wish-card" style="--i: 1"><p><b>1.</b> 🎓 Tes Profesi Psikolog berjalan lancar dan lulus dengan hasil terbaik.</p></div>
+              <div class="wish-card" style="--i: 2"><p><b>2.</b> 🌱 Semua rencana yang sudah kamu susun bisa terealisasi dan terus berprogres.</p></div>
+              <div class="wish-card" style="--i: 3"><p><b>3.</b> 💼 Magang selesai dengan bangga dan menjadi awal karier yang baik.</p></div>
+              <div class="wish-card" style="--i: 4"><p><b>4.</b> 💚 Kesehatan, kebahagiaan, dan ketenangan hati selalu menyertai kamu.</p></div>
+              <div class="wish-card" style="--i: 5"><p><b>5.</b> 🌙 Mimpi-mimpimu satu per satu menjadi nyata di waktu terbaik.</p></div>
+              <div class="wish-card" style="--i: 6"><p><b>6.</b> 💑 Hubungan kita tumbuh lebih dewasa, hangat, dan penuh keberkahan.</p></div>
+              <div class="wish-card" style="--i: 7"><p><b>7.</b> ✨ Di usia 23, semoga kamu menemukan lebih banyak alasan untuk bahagia.</p></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="dialog">
+          <div class="speaker">Narasi</div>
+          <div class="dialog-text" id="textWishes"></div>
+          <div class="choices" id="choicesWishes"></div>
+        </div>
+      </div>
+    </section>
+
+
+    <section class="scene" id="sceneSecretLetter">
+      <div class="scene-inner">
+        <div class="stage ending-stage" id="secretLeafStage">
+          <article class="secret-letter">
+            <span class="stamp">Surat rahasia</span>
+            <h1>Kalau kamu sudah sampai sini...</h1>
+            <p>
+              Berarti kamu sudah melewati cerita kecil yang aku buat dari awal:
+              ruangan gelap, petunjuk kecil, pintu, kue, doa, sampai akhirnya sampai ke bagian ini.
+            </p>
+            <p>
+              Aku nggak tahu hadiah ini akan terlihat sederhana atau justru berlebihan buat kamu.
+              Tapi aku tahu satu hal: hari ini kamu pantas dibuat merasa spesial.
+            </p>
+            <p>
+              Aku berharap usia 23 ini jadi tahun yang lembut buat kamu.
+              Bukan berarti semuanya harus mudah, tapi semoga kamu selalu punya alasan untuk tetap kuat,
+              tetap percaya, dan tetap merasa disayang.
+            </p>
+            <p id="secretWishLine">
+              Doa yang kamu tulis tadi juga aku aminkan. Semoga Allah kabulkan dengan cara yang paling indah.
+            </p>
+            <p>
+              Terima kasih sudah jadi bagian dari hidup aku, Meisya.
+              Semoga hal-hal baik datang ke kamu dengan cara yang tidak kamu sangka-sangka.
+            </p>
+            <p style="font-family: Georgia, 'Times New Roman', serif; color: var(--accent); font-size: 1.25rem;">
+              — Raihan Febrian
+            </p>
+          </article>
+        </div>
+
+        <div class="dialog">
+          <div class="speaker">Raihan</div>
+          <div class="dialog-text" id="textSecretLetter"></div>
+          <div class="choices" id="choicesSecretLetter"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="scene" id="sceneFinalCard">
+      <div class="scene-inner">
+        <div class="stage ending-stage" id="finalCardLeafStage">
+          <div class="final-card">
+            <div class="final-card-content">
+              <div class="small">23rd Birthday</div>
+              <div class="big">Happy<br>Birthday</div>
+              <div class="name">Meisya Nur Annisa<br>Maulidina</div>
+              <p class="quote">
+                Semoga doa kamu hari ini jadi awal dari banyak hal baik yang pelan-pelan Allah bukakan jalannya.
+              </p>
+              <div class="from">From Raihan Febrian 🌿</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="dialog">
+          <div class="speaker">Narasi</div>
+          <div class="dialog-text" id="textFinalCard"></div>
+          <div class="choices" id="choicesFinalCard"></div>
+        </div>
+      </div>
+    </section>
+
+
+    <section class="scene" id="sceneVideoOutro">
+      <div class="scene-inner">
+        <div class="stage ending-stage" id="videoOutroLeafStage">
+          <div class="video-outro-wrap">
+            <div class="eyebrow" style="color: var(--accent);">One last thing</div>
+            <h1>Satu video terakhir buat kamu 🎬</h1>
+            <p>
+              Kalau cerita kecil ini sudah selesai, bagian ini adalah penutupnya.
+              Tekan play, dan biarkan videonya ngomong dengan caranya sendiri.
+            </p>
+
+            <div class="video-frame">
+              <video id="finalVideo" controls playsinline preload="metadata">
+                <source src="./video1.mp4" type="video/mp4" />
+                <source src="./video1.webm" type="video/webm" />
+                <source src="./video1.mov" type="video/quicktime" />
+                <source src="./video1" type="video/mp4" />
+                Browser kamu belum mendukung pemutar video.
+              </video>
+            </div>
+
+            <div class="video-note">
+              Catatan deploy: letakkan file video di folder yang sama dengan file HTML. Nama yang paling aman: <b>video1.mp4</b>.
+            </div>
+
+            <div class="video-actions">
+              <button class="btn secondary" id="backToFinalCardBtn">Kembali ke Kartu</button>
+              <button class="btn" id="replayFromVideoBtn">Main Lagi 🔄</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="dialog">
+          <div class="speaker">Raihan</div>
+          <div class="dialog-text" id="textVideoOutro"></div>
+          <div class="choices" id="choicesVideoOutro"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="scene" id="sceneEnding">
+      <div class="scene-inner">
+        <div class="stage ending-stage" id="endingLeafStage">
+          <div class="reveal-card letter" style="text-align:center;">
+            <div class="eyebrow" style="color: var(--accent);">The end</div>
+            <h1>Happy Birthday, Meisya 🌿</h1>
+            <p>
+              Makasih udah jadi bagian dari hidup aku.
+              Semoga semua yang kamu mau, Allah kasih lebih dari yang kamu bayangin.
+              Semoga kamu selalu dijaga, dikuatkan, dan dibahagiakan di setiap langkahmu.
+            </p>
+            <p style="color: var(--accent); font-family: Georgia, 'Times New Roman', serif; font-size: 1.35rem;">
+              — Raihan Febrian
+            </p>
+
+            <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-top:24px;">
+              <button class="btn" id="playOutroVideoBtn">Putar Video Terakhir 🎬</button>
+              <button class="btn secondary" id="replayBtn">Main Lagi 🔄</button>
+              <button class="btn secondary" id="finalConfettiBtn">Confetti Lagi ✨</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="dialog">
+          <div class="speaker">Narasi</div>
+          <div class="dialog-text">Cerita kecil ini selesai, tapi doanya semoga terus jalan pelan-pelan setelah hari ini.</div>
+          <div class="choices"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const CANDLE_COUNT = 23;
+
+    const gameState = {
+      lightOn: false,
+      cluesFound: [],
+      doorChoice: null,
+      selectedWish: null,
+      typedWish: null,
+      selectedWishText: null,
+      selectedWishLabel: null,
+      meisyaReaction: null,
+      codeUnlocked: false,
+      soundEnabled: true,
+      musicStarted: false,
+      routeNotes: []
+    };
+
+    const sceneOrder = ["dark", "room", "door", "reveal", "wish", "blow", "letter", "wishes", "secretLetter", "finalCard", "ending", "videoOutro"];
+    const scenes = {
+      dark: document.getElementById("sceneDark"),
+      room: document.getElementById("sceneRoom"),
+      door: document.getElementById("sceneDoor"),
+      reveal: document.getElementById("sceneReveal"),
+      wish: document.getElementById("sceneWish"),
+      blow: document.getElementById("sceneBlow"),
+      letter: document.getElementById("sceneLetter"),
+      wishes: document.getElementById("sceneWishes"),
+      secretLetter: document.getElementById("sceneSecretLetter"),
+      finalCard: document.getElementById("sceneFinalCard"),
+      ending: document.getElementById("sceneEnding"),
+      videoOutro: document.getElementById("sceneVideoOutro")
+    };
+
+    const progressFill = document.getElementById("progressFill");
+    const topbar = document.getElementById("topbar");
+    const toast = document.getElementById("toast");
+    const soundBtn = document.getElementById("soundBtn");
+    const musicPill = document.getElementById("musicPill");
+
+    const ui = {
+      darkText: document.getElementById("textDark"),
+      darkChoices: document.getElementById("choicesDark"),
+      roomText: document.getElementById("textRoom"),
+      roomChoices: document.getElementById("choicesRoom"),
+      doorText: document.getElementById("textDoor"),
+      doorChoices: document.getElementById("choicesDoor"),
+      revealText: document.getElementById("textReveal"),
+      revealChoices: document.getElementById("choicesReveal"),
+      letterText: document.getElementById("textLetter"),
+      letterChoices: document.getElementById("choicesLetter"),
+      wishesText: document.getElementById("textWishes"),
+      wishesChoices: document.getElementById("choicesWishes"),
+      secretLetterText: document.getElementById("textSecretLetter"),
+      secretLetterChoices: document.getElementById("choicesSecretLetter"),
+      finalCardText: document.getElementById("textFinalCard"),
+      finalCardChoices: document.getElementById("choicesFinalCard"),
+      videoOutroText: document.getElementById("textVideoOutro"),
+      videoOutroChoices: document.getElementById("choicesVideoOutro")
+    };
+
+    let typingTimer = null;
+    let audioCtx = null;
+    let activeScene = "dark";
+
+    function init() {
+      const doorStage = document.getElementById("doorStoryStage");
+      const door = document.getElementById("doorSceneDoor");
+      const girlDoor = document.getElementById("girlDoor");
+      if (doorStage) doorStage.classList.remove("door-action", "peek-action", "peek-from-door", "after-peek", "cake-clickable", "approach-door");
+      if (door) door.classList.remove("open", "peek");
+      const heldCakeReset = document.querySelector("#boyDoor .cake-held");
+      if (heldCakeReset) {
+        heldCakeReset.classList.remove("click-ready");
+        heldCakeReset.onclick = null;
+        heldCakeReset.onkeydown = null;
+        heldCakeReset.removeAttribute("tabindex");
+        heldCakeReset.removeAttribute("role");
+      }
+      if (girlDoor) {
+        girlDoor.classList.remove("walking");
+        girlDoor.classList.add("sitting");
+      }
+      makeCandles("candlesReveal");
+      makeCandles("candlesBlow");
+      createLeaves("endingLeafStage", 24);
+      createLeaves("wishesLeafStage", 18);
+      createLeaves("secretLeafStage", 20);
+      createLeaves("finalCardLeafStage", 22);
+      createLeaves("videoOutroLeafStage", 18);
+      setupRoomEvents();
+      setupWishOptions();
+      setupFinalButtons();
+      setupCanvas();
+      showScene("dark");
+      runDarkIntro();
+    }
+
+    function showScene(name) {
+      Object.values(scenes).forEach(scene => scene.classList.remove("active"));
+      scenes[name].classList.add("active");
+      activeScene = name;
+
+      const idx = sceneOrder.indexOf(name);
+      const progress = idx < 0 ? 0 : ((idx + 1) / sceneOrder.length) * 100;
+      progressFill.style.width = progress + "%";
+      topbar.classList.toggle("show", name !== "dark");
+
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function typeText(target, text, onDone, speed = 22) {
+      clearInterval(typingTimer);
+      target.textContent = "";
+      let i = 0;
+
+      typingTimer = setInterval(() => {
+        target.textContent += text.charAt(i);
+        i++;
+        if (i >= text.length) {
+          clearInterval(typingTimer);
+          if (onDone) onDone();
+        }
+      }, speed);
+    }
+
+    function setChoices(container, choices) {
+      container.innerHTML = "";
+      choices.forEach(choice => {
+        const btn = document.createElement("button");
+        btn.className = "choice" + (choice.variant ? " " + choice.variant : "");
+        btn.textContent = choice.label;
+        btn.addEventListener("click", choice.onClick);
+        container.appendChild(btn);
+      });
+    }
+
+    function setDialog(textEl, choicesEl, text, choices = [], speakerEl, speaker = null) {
+      if (speakerEl && speaker) speakerEl.textContent = speaker;
+      setChoices(choicesEl, []);
+      typeText(textEl, text, () => setChoices(choicesEl, choices));
+    }
+
+    function runDarkIntro() {
+      setDialog(
+        ui.darkText,
+        ui.darkChoices,
+        "Kenapa di sini gelap sekali?\nAda suara kecil di kejauhan, tapi belum jelas dari mana arahnya.",
+        [
+          { label: "Nyalakan lampunya", onClick: () => chooseDarkPath("lamp") },
+          { label: "Panggil seseorang", variant: "secondary", onClick: () => chooseDarkPath("call") },
+          { label: "Diam sebentar", variant: "ghost", onClick: () => chooseDarkPath("silent") }
+        ],
+        document.getElementById("speakerDark"),
+        "Narasi"
+      );
+    }
+
+    function chooseDarkPath(path) {
+      initAudio();
+      beep(420, 0.05);
+
+      const roomStage = document.getElementById("roomStage");
+      const switchObj = document.getElementById("switchObj");
+
+      let text;
+      showScene("room");
+
+      if (path === "lamp") {
+        gameState.routeNotes.push("Meisya langsung berani menyalakan lampu.");
+        text = "Klik.\nLampunya menyala pelan. Ternyata kamu ada di sebuah kamar kecil yang hangat.";
+        roomStage.classList.remove("dim");
+        switchObj.classList.add("on");
+        gameState.lightOn = true;
+
+        setDialog(
+          ui.roomText,
+          ui.roomChoices,
+          text + "\nAda beberapa benda yang seperti sengaja ditaruh di sini. Coba cari petunjuknya.",
+          [
+            { label: "Cari petunjuk", variant: "secondary", onClick: () => showToast("Klik kalender, foto kecil, dan kotak surat di meja.") }
+          ],
+          document.getElementById("speakerRoom"),
+          "Narasi"
+        );
+
+        return;
+      }
+
+      if (path === "call") {
+        gameState.routeNotes.push("Meisya sempat memanggil seseorang di ruangan gelap.");
+        text = "“Halo... ada siapa?”\nTidak ada jawaban. Tapi entah kenapa, tempat ini terasa aman.\nDi dinding, ada saklar kecil yang menunggu disentuh.";
+      } else {
+        gameState.routeNotes.push("Meisya memilih diam dan mendengar suara ketukan pertama.");
+        text = "Kamu memilih diam sebentar.\nLalu terdengar suara pelan dari kejauhan...\nTok... tok...\nSepertinya ada sesuatu yang menunggumu.";
+      }
+
+      roomStage.classList.add("dim");
+      switchObj.classList.remove("on");
+      gameState.lightOn = false;
+
+      setDialog(
+        ui.roomText,
+        ui.roomChoices,
+        text,
+        [
+          { label: "Sentuh saklar lampu", onClick: turnOnRoomLight }
+        ],
+        document.getElementById("speakerRoom"),
+        "Narasi"
+      );
+    }
+
+    function turnOnRoomLight() {
+      const roomStage = document.getElementById("roomStage");
+      const switchObj = document.getElementById("switchObj");
+      roomStage.classList.remove("dim");
+      switchObj.classList.add("on");
+      gameState.lightOn = true;
+      beep(620, 0.06);
+      showToast("Lampu menyala. Sekarang cari 3 petunjuk di kamar.");
+
+      setDialog(
+        ui.roomText,
+        ui.roomChoices,
+        "Ruangan ini terasa tenang. Ada beberapa benda yang seperti sengaja ditaruh di sini.\nCoba cari 3 petunjuk sebelum membuka pintu.",
+        [
+          { label: "Aku akan cari petunjuknya", variant: "secondary", onClick: () => showToast("Klik kalender, foto kecil, dan kotak surat di meja.") }
+        ],
+        document.getElementById("speakerRoom"),
+        "Narasi"
+      );
+    }
+
+    function setupRoomEvents() {
+      document.getElementById("switchObj").addEventListener("click", () => {
+        if (!gameState.lightOn) turnOnRoomLight();
+        else showToast("Lampunya sudah menyala. Fokus cari petunjuknya ya.");
+      });
+
+      document.getElementById("calendarObj").addEventListener("click", () => findClue("calendar"));
+      document.getElementById("photoObj").addEventListener("click", () => findClue("photo"));
+      document.getElementById("letterObj").addEventListener("click", () => findClue("letter"));
+      document.getElementById("giftObj").addEventListener("click", handleGiftClick);
+      document.getElementById("windowObj").addEventListener("click", () => {
+        if (!gameState.lightOn) {
+          showToast("Masih terlalu gelap untuk melihat jendela.");
+          return;
+        }
+        showToast("Di luar jendela, daun-daun bergerak pelan. Rasanya malam ini sengaja dibuat tenang.");
+      });
+      document.getElementById("doorObj").addEventListener("click", () => {
+        if (gameState.cluesFound.length < 3) {
+          showToast("Pintunya belum bisa dibuka. Temukan 3 petunjuk dulu.");
+          return;
+        }
+
+        if (!gameState.codeUnlocked) {
+          showToast("Belum saatnya ke pintu. Buka laci kecilnya dulu.");
+          prepareDoorAfterClues();
+          return;
+        }
+
+        startDoorScene(true);
+      });
+    }
+
+    function findClue(type) {
+      if (!gameState.lightOn) {
+        showToast("Masih gelap. Nyalakan lampunya dulu.");
+        return;
+      }
+
+      if (gameState.cluesFound.includes(type)) {
+        showToast("Petunjuk ini sudah kamu temukan.");
+        return;
+      }
+
+      gameState.cluesFound.push(type);
+      document.getElementById(type === "letter" ? "letterObj" : type + "Obj").classList.add("found");
+      document.getElementById("check-" + type).textContent = "✓";
+      document.getElementById("check-" + type).classList.add("done");
+
+      const isFinalClue = gameState.cluesFound.length === 3;
+      const finalClueChoices = isFinalClue
+        ? [
+            { label: "Aku sudah selesai baca", onClick: prepareDoorAfterClues }
+          ]
+        : [];
+
+      if (type === "calendar") {
+        document.getElementById("tipCalendar").classList.add("hidden");
+        setDialog(
+          ui.roomText,
+          ui.roomChoices,
+          "Di kalender tertulis angka 23 dengan lingkaran kecil di sekelilingnya.\nAda catatan kecil: “Angka ini bukan cuma angka. Ini usia baru yang akan kamu bawa mulai hari ini.”",
+          finalClueChoices,
+          document.getElementById("speakerRoom"),
+          "Kalender"
+        );
+      }
+
+      if (type === "photo") {
+        document.getElementById("tipPhoto").classList.add("hidden");
+        setDialog(
+          ui.roomText,
+          ui.roomChoices,
+          "Di balik foto kecil itu ada tulisan pendek:\n“Kadang hal sederhana bisa jadi cara seseorang bilang: kamu berarti.”",
+          finalClueChoices,
+          document.getElementById("speakerRoom"),
+          "Foto Kecil"
+        );
+      }
+
+      if (type === "letter") {
+        document.getElementById("tipLetter").classList.add("hidden");
+        setDialog(
+          ui.roomText,
+          ui.roomChoices,
+          "Kotak kecil itu berisi selembar pesan:\n“Sebelum membuka pintu, siapkan satu doa yang paling kamu ingin Allah kabulkan.”",
+          finalClueChoices,
+          document.getElementById("speakerRoom"),
+          "Kotak Kecil"
+        );
+      }
+
+      beep(720, 0.06);
+
+      if (isFinalClue) {
+        showToast("Semua petunjuk terkumpul. Baca dulu, lalu klik lanjut.");
+      } else {
+        showToast(`Petunjuk ditemukan (${gameState.cluesFound.length}/3).`);
+      }
+    }
+
+    function prepareDoorAfterClues() {
+      if (gameState.codeUnlocked) {
+        startDoorScene(true);
+        return;
+      }
+
+      setDialog(
+        ui.roomText,
+        ui.roomChoices,
+        "Tiga petunjuk sudah terkumpul.\nDi meja, laci kecil itu menyala pelan dan meminta kode dua digit.\nIni bukan kode pintu. Ini cuma cara ruangan ini memastikan kamu sadar angka penting hari ini.",
+        [
+          { label: "Masukkan kode laci", onClick: renderCodePuzzle }
+        ],
+        document.getElementById("speakerRoom"),
+        "Narasi"
+      );
+    }
+
+    function renderCodePuzzle() {
+      ui.roomChoices.innerHTML = `
+        <div class="code-puzzle">
+          <div class="code-puzzle-label">Masukkan kode laci kecil</div>
+          <div class="code-input-row">
+            <input class="code-input" id="birthdayCodeInput" maxlength="2" inputmode="numeric" pattern="[0-9]*" placeholder="??" />
+            <button class="choice" id="birthdayCodeBtn">Buka Laci</button>
+          </div>
+          <div class="code-hint">Petunjuknya ada di kalender: angka usia baru Meisya.</div>
+        </div>
+      `;
+
+      const input = document.getElementById("birthdayCodeInput");
+      const button = document.getElementById("birthdayCodeBtn");
+
+      setTimeout(() => input.focus(), 80);
+
+      input.addEventListener("input", () => {
+        input.value = input.value.replace(/\D/g, "").slice(0, 2);
+      });
+
+      const checkCode = () => {
+        const code = input.value.trim();
+
+        if (code === "23") {
+          gameState.codeUnlocked = true;
+          beep(820, 0.07);
+          showToast("Klik. Lacinya terbuka.");
+          setDialog(
+            ui.roomText,
+            ui.roomChoices,
+            "Klik.\nLaci kecil itu terbuka pelan.\nDi dalamnya ada pesan terakhir:\n“Kalau kamu sudah siap, dekati pintu. Ada seseorang di luar yang menunggu.”",
+            [
+              { label: "Dekati pintu", onClick: () => startDoorScene(true) }
+            ],
+            document.getElementById("speakerRoom"),
+            "Laci Kecil"
+          );
+        } else {
+          beep(190, 0.08);
+          showToast("Belum tepat. Ingat angka usia baru Meisya.");
+          input.value = "";
+          input.focus();
+        }
+      };
+
+      button.addEventListener("click", checkCode);
+      input.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") checkCode();
+      });
+    }
+
+    function handleGiftClick() {
+      if (!gameState.lightOn) {
+        showToast("Masih terlalu gelap untuk melihat hadiahnya.");
+        return;
+      }
+
+      if (gameState.cluesFound.length < 3) {
+        showToast("Laci kecil masih terkunci. Cari 3 petunjuk dulu.");
+      } else if (!gameState.codeUnlocked) {
+        showToast("Laci kecil meminta kode dulu. Petunjuknya ada di kalender.");
+        prepareDoorAfterClues();
+      } else {
+        showToast("Laci kecil terbuka. Cahaya kecil mengarah ke pintu.");
+        startDoorScene(true);
+      }
+    }
+
+    function knock() {
+      const doorObj = document.getElementById("doorObj");
+      doorObj.classList.add("knocking");
+      beep(180, 0.06);
+      setTimeout(() => beep(180, 0.06), 220);
+      setTimeout(() => beep(180, 0.06), 430);
+      setTimeout(() => doorObj.classList.remove("knocking"), 1800);
+    }
+
+    function startDoorScene(fromCode = false) {
+      if (!gameState.codeUnlocked) {
+        showToast("Belum bisa lanjut. Buka laci kecilnya dulu.");
+        prepareDoorAfterClues();
+        return;
+      }
+
+      const doorStage = document.getElementById("doorStoryStage");
+      const door = document.getElementById("doorSceneDoor");
+      const girlDoor = document.getElementById("girlDoor");
+      if (doorStage) {
+        doorStage.classList.remove("door-action", "peek-action", "peek-from-door", "after-peek", "cake-clickable", "approach-door");
+        if (fromCode) doorStage.classList.add("approach-door");
+      }
+      if (door) {
+        door.classList.remove("open", "peek");
+        door.classList.add("knocking");
+      }
+      if (girlDoor) {
+        girlDoor.classList.remove("walking");
+        if (fromCode) {
+          girlDoor.classList.remove("sitting");
+        } else {
+          girlDoor.classList.add("sitting");
+        }
+      }
+      showScene("door");
+      const doorIntroText = fromCode
+        ? "Meisya mendekati pintu pelan-pelan.\nBaru saat tangannya hampir menyentuh gagang pintu, terdengar suara dari luar...\nTok... tok... tok..."
+        : "Meisya berdiri di depan pintu.\nDari luar terdengar suara pelan...\nTok... tok... tok...";
+
+      setDialog(
+        ui.doorText,
+        ui.doorChoices,
+        doorIntroText + "\nApa yang mau kamu lakukan?",
+        [
+          { label: "Buka pintunya", onClick: () => chooseDoor("open") },
+          { label: "Intip dulu", variant: "secondary", onClick: () => chooseDoor("peek") },
+          { label: "Diam saja", variant: "ghost", onClick: () => chooseDoor("silent") },
+          { label: "Tanya: siapa?", variant: "secondary", onClick: () => chooseDoor("ask") }
+        ],
+        document.getElementById("speakerDoor"),
+        "Narasi"
+      );
+    }
+
+    function chooseDoor(choice) {
+      gameState.doorChoice = choice;
+
+      if (choice === "peek") {
+        runPeekAction();
+        return;
+      }
+
+      let text;
+      let nextLabel = "Buka pintunya";
+
+      if (choice === "open") {
+        text = "Kamu menarik napas pelan.\nDari balik pintu, ada cahaya hangat yang menunggu.";
+        nextLabel = "Berjalan ke pintu";
+      } else if (choice === "silent") {
+        text = "Kamu memilih diam.\nDi luar, suara itu terdengar lagi.\nTok... tok...\nLalu ada suara pelan: “Meisya... ini aku. Kuemu hampir miring.”";
+        nextLabel = "Aduh, buka pintunya";
+      } else {
+        text = "“Siapa di luar?”\nAda jeda sebentar.\nLalu terdengar suara yang kamu kenal:\n“Seseorang yang hari ini cuma pengen bikin kamu senyum.”";
+        nextLabel = "Buka pintunya";
+      }
+
+      setDialog(
+        ui.doorText,
+        ui.doorChoices,
+        text,
+        [
+          { label: nextLabel, onClick: () => revealSurprise(false) }
+        ],
+        document.getElementById("speakerDoor"),
+        choice === "ask" || choice === "silent" ? "Raihan" : "Narasi"
+      );
+    }
+
+    function runPeekAction() {
+      const doorStage = document.getElementById("doorStoryStage");
+      const door = document.getElementById("doorSceneDoor");
+      const girlDoor = document.getElementById("girlDoor");
+      const alreadyNearDoor = doorStage && doorStage.classList.contains("approach-door");
+
+      if (doorStage) {
+        doorStage.classList.remove("door-action", "cake-clickable");
+        if (alreadyNearDoor) {
+          doorStage.classList.remove("approach-door");
+          doorStage.classList.add("peek-from-door");
+        } else {
+          doorStage.classList.remove("approach-door", "peek-from-door");
+        }
+        doorStage.classList.add("peek-action");
+      }
+
+      if (door) {
+        door.classList.remove("knocking");
+        door.classList.add("peek");
+      }
+
+      if (girlDoor) {
+        girlDoor.classList.remove("sitting");
+        girlDoor.classList.add("walking");
+      }
+
+      const peekIntroText = alreadyNearDoor
+        ? "Meisya sudah berdiri dekat pintu.\nIa sedikit menunduk, lalu mengintip pelan dari lubang kunci..."
+        : "Meisya pelan-pelan turun dari kasur.\nLangkahnya kecil, hati-hati, lalu ia mendekat ke pintu untuk mengintip...";
+
+      const waitTime = alreadyNearDoor ? 1250 : 2350;
+
+      setDialog(
+        ui.doorText,
+        ui.doorChoices,
+        peekIntroText,
+        [],
+        document.getElementById("speakerDoor"),
+        "Narasi"
+      );
+
+      setTimeout(() => {
+        setDialog(
+          ui.doorText,
+          ui.doorChoices,
+          "Meisya mengintip dari lubang kunci.\nDi balik pintu, terlihat seseorang berdiri sambil memegang sesuatu.\nAda nyala kecil di atasnya... sepertinya lilin.",
+          [
+            { label: "Buka sekarang", onClick: () => revealSurprise(true) },
+            { label: "Pura-pura belum tahu", variant: "secondary", onClick: () => {
+              setDialog(
+                ui.doorText,
+                ui.doorChoices,
+                "Kamu pura-pura belum tahu.\nDari luar, terdengar suara Raihan yang pelan tapi jelas:\n“Meisya... ini aku. Ayo buka pintunya.”",
+                [
+                  { label: "Oke, buka pintunya", onClick: () => revealSurprise(true) }
+                ],
+                document.getElementById("speakerDoor"),
+                "Raihan"
+              );
+            }}
+          ],
+          document.getElementById("speakerDoor"),
+          "Narasi"
+        );
+      }, waitTime);
+    }
+
+    function revealSurprise(fromPeek = false) {
+      const doorStage = document.getElementById("doorStoryStage");
+      const door = document.getElementById("doorSceneDoor");
+      const girlDoor = document.getElementById("girlDoor");
+
+      if (doorStage) {
+        doorStage.classList.remove("cake-clickable", "approach-door", "peek-action", "peek-from-door");
+        if (fromPeek) doorStage.classList.add("after-peek");
+        doorStage.classList.add("door-action");
+      }
+
+      if (girlDoor) {
+        girlDoor.classList.remove("sitting");
+        girlDoor.classList.add("walking");
+      }
+
+      const openingText = fromPeek
+        ? "Karena sudah ketahuan sedikit, Meisya akhirnya membuka pintunya.\nIa tetap kaget, karena yang muncul ternyata lebih manis dari yang dikira."
+        : "Meisya menarik napas pelan.\nPegangan pintu disentuh, lalu pintunya terbuka perlahan.";
+
+      setDialog(
+        ui.doorText,
+        ui.doorChoices,
+        openingText,
+        [
+          { label: "Lihat siapa yang datang", onClick: showRaihanArrival }
+        ],
+        document.getElementById("speakerDoor"),
+        "Narasi"
+      );
+
+      setTimeout(() => {
+        if (door) {
+          door.classList.remove("knocking", "peek");
+          door.classList.add("open");
+        }
+        beep(880, 0.08);
+      }, fromPeek ? 520 : 1450);
+
+      setTimeout(() => {
+        startConfetti(1800, 100);
+      }, fromPeek ? 1850 : 2750);
+    }
+
+    function showRaihanArrival() {
+      setDialog(
+        ui.doorText,
+        ui.doorChoices,
+        "Raihan muncul dari balik pintu sambil membawa kue kecil.\nDi atas kuenya, lilin-lilin kecil menyala pelan.\nMeisya mau merespons apa?",
+        [
+          { label: "“Makasih ya...”", onClick: () => chooseMeisyaReaction("thanks") },
+          { label: "“Kok niat banget?”", variant: "secondary", onClick: () => chooseMeisyaReaction("niat") },
+          { label: "“Aku terharu.”", variant: "ghost", onClick: () => chooseMeisyaReaction("terharu") }
+        ],
+        document.getElementById("speakerDoor"),
+        "Raihan"
+      );
+    }
+
+    function chooseMeisyaReaction(reaction) {
+      const responses = {
+        thanks: "Raihan tersenyum kecil.\n“Sama-sama. Aku seneng kalau kamu suka. Hari ini kamu memang pantas dirayakan.”",
+        niat: "Raihan sedikit salah tingkah.\n“Karena kamu memang spesial. Jadi ya... aku pengen bikin sesuatu yang nggak biasa.”",
+        terharu: "Raihan menatap kuenya sebentar, lalu tersenyum.\n“Kalau kamu terharu, berarti misiku berhasil.”"
+      };
+
+      gameState.meisyaReaction = reaction;
+      beep(700, 0.06);
+
+      setDialog(
+        ui.doorText,
+        ui.doorChoices,
+        responses[reaction] + "\n\nSekarang klik langsung kuenya di tangan Raihan untuk lanjut.",
+        [],
+        document.getElementById("speakerDoor"),
+        "Raihan"
+      );
+
+      enableHeldCakeClick();
+    }
+
+    function enableHeldCakeClick() {
+      const doorStage = document.getElementById("doorStoryStage");
+      const heldCake = document.querySelector("#boyDoor .cake-held");
+
+      if (doorStage) doorStage.classList.add("cake-clickable");
+
+      if (heldCake) {
+        heldCake.classList.add("click-ready");
+        heldCake.onclick = goRevealScene;
+        heldCake.setAttribute("title", "Klik kue untuk lanjut");
+        heldCake.setAttribute("role", "button");
+        heldCake.setAttribute("tabindex", "0");
+        heldCake.onkeydown = (event) => {
+          if (event.key === "Enter" || event.key === " ") goRevealScene();
+        };
+      }
+    }
+
+    function goRevealScene() {
+      const doorStage = document.getElementById("doorStoryStage");
+      const heldCake = document.querySelector("#boyDoor .cake-held");
+      if (doorStage) doorStage.classList.remove("cake-clickable");
+      if (heldCake) {
+        heldCake.classList.remove("click-ready");
+        heldCake.onclick = null;
+        heldCake.onkeydown = null;
+        heldCake.removeAttribute("tabindex");
+        heldCake.removeAttribute("role");
+      }
+
+      showScene("reveal");
+      setDialog(
+        ui.revealText,
+        ui.revealChoices,
+        "Surprise, Meisya 🤍\nRaihan datang bawa kue kecil, 23 lilin, dan satu harapan sederhana: semoga hari ini kamu benar-benar merasa disayang.",
+        [
+          { label: "Lanjut", onClick: () => {
+            setDialog(
+              ui.revealText,
+              ui.revealChoices,
+              "Sebelum meniup lilin, ada satu hal yang harus kamu lakukan.\nTulis satu doa yang paling kamu ingin Allah kabulkan tahun ini.",
+              [
+                { label: "Tulis doa dulu", onClick: () => showScene("wish") }
+              ],
+              document.getElementById("speakerReveal"),
+              "Raihan"
+            );
+          }}
+        ],
+        document.getElementById("speakerReveal"),
+        "Raihan"
+      );
+    }
+
+    function setupWishOptions() {
+      const input = document.getElementById("typedWishInput");
+      const continueBtn = document.getElementById("wishContinueBtn");
+      const counter = document.getElementById("typedWishCounter");
+      const preview = document.getElementById("typedWishPreview");
+      const previewText = document.getElementById("typedWishPreviewText");
+      const wishText = document.getElementById("textWish");
+
+      if (!input || !continueBtn) return;
+
+      input.addEventListener("input", () => {
+        const value = input.value.trim();
+        counter.textContent = `${input.value.length}/260 karakter. Tulis dengan pelan, tidak perlu panjang.`;
+
+        if (value.length > 0) {
+          gameState.typedWish = value;
+          gameState.selectedWishText = buildWishResponse(value);
+          preview.classList.remove("hidden");
+          previewText.textContent = value;
+          continueBtn.classList.remove("hidden");
+        } else {
+          gameState.typedWish = "";
+          gameState.selectedWishText = "";
+          preview.classList.add("hidden");
+          previewText.textContent = "";
+          continueBtn.classList.add("hidden");
+        }
+      });
+
+      continueBtn.addEventListener("click", () => {
+        const value = input.value.trim();
+
+        if (!value) {
+          showToast("Tulis doanya dulu ya.");
+          return;
+        }
+
+        gameState.typedWish = value;
+        gameState.selectedWishText = buildWishResponse(value);
+
+        typeText(
+          wishText,
+          "Doamu sudah disimpan di cerita ini.\nSekarang waktunya tutup mata sebentar, lalu biarkan lilinnya tertiup pelan."
+        );
+
+        beep(680, 0.06);
+
+        setTimeout(() => {
+          startBlowSequence();
+        }, 1600);
+      });
+    }
+
+    function startBlowSequence() {
+      showScene("blow");
+      const blowCount = document.getElementById("blowCount");
+      const timerBox = document.getElementById("timerBox");
+      const timerText = document.getElementById("timerText");
+      const timerCircle = document.getElementById("timerCircle");
+      const autoBlowNote = document.getElementById("autoBlowNote");
+
+      timerBox.classList.add("hidden");
+      autoBlowNote.classList.add("hidden");
+
+      const words = ["Tutup mata sebentar...", "Tarik napas pelan...", "1...", "2...", "3...", "Tiup! 💨"];
+      let i = 0;
+      blowCount.textContent = words[i];
+
+      const wordInterval = setInterval(() => {
+        i++;
+        blowCount.textContent = words[i];
+        blowCount.style.animation = "none";
+        blowCount.offsetHeight;
+        blowCount.style.animation = "";
+
+        if (i >= words.length - 1) {
+          clearInterval(wordInterval);
+
+          setTimeout(() => {
+            timerBox.classList.remove("hidden");
+            startMiniTimer(() => {
+              blowOutCandles();
+            });
+          }, 850);
+        }
+      }, 950);
+
+      function startMiniTimer(onDone) {
+        let left = 5;
+        timerText.textContent = left;
+        timerCircle.style.setProperty("--progress", 100);
+
+        const interval = setInterval(() => {
+          left--;
+          timerText.textContent = left;
+          timerCircle.style.setProperty("--progress", (left / 5) * 100);
+
+          if (left <= 0) {
+            clearInterval(interval);
+            onDone();
+          }
+        }, 1000);
+      }
+    }
+
+    function blowOutCandles() {
+      const candles = [...document.querySelectorAll("#candlesBlow .candle")];
+      const textBlow = document.getElementById("textBlow");
+      const autoBlowNote = document.getElementById("autoBlowNote");
+
+      if (autoBlowNote) autoBlowNote.textContent = "";
+      typeText(textBlow, "Pelan-pelan, lilinnya padam satu per satu.\nSemoga doa yang kamu tulis tadi benar-benar sampai dan dikabulkan.");
+
+      candles.forEach((candle, index) => {
+        setTimeout(() => {
+          candle.style.setProperty("--smoke-delay", index * 8);
+          candle.classList.add("out");
+        }, index * 70);
+      });
+
+      setTimeout(() => {
+        startConfetti(3800, 190);
+        playHappyBirthday();
+      }, 900);
+
+      setTimeout(() => {
+        goLetter();
+      }, 7200);
+    }
+
+
+    function buildWishResponse(value) {
+      const wish = (value || "").toLowerCase();
+      let tailored = "";
+
+      if (wish.includes("lulus") || wish.includes("ujian") || wish.includes("profesi") || wish.includes("psikolog") || wish.includes("tes")) {
+        tailored = "Aku ikut mengaminkan khusus untuk proses belajar, tes, dan kelulusanmu. Semoga pikiranmu dimudahkan, hatimu ditenangkan, dan hasilnya jadi kabar baik yang kamu tunggu.";
+      } else if (wish.includes("magang") || wish.includes("kerja") || wish.includes("karier") || wish.includes("career")) {
+        tailored = "Aku ikut mengaminkan khusus untuk jalan karier dan proses magangmu. Semoga setiap tempat yang kamu datangi membuka pengalaman baik, relasi baik, dan masa depan yang lebih terang.";
+      } else if (wish.includes("sehat") || wish.includes("tenang") || wish.includes("bahagia") || wish.includes("kuat")) {
+        tailored = "Aku ikut mengaminkan khusus untuk kesehatan, ketenangan, dan kebahagiaanmu. Semoga kamu selalu dijaga, bahkan di hari-hari yang rasanya berat untuk dijelaskan.";
+      } else if (wish.includes("allah") || wish.includes("doa") || wish.includes("semoga") || wish.includes("aamiin") || wish.includes("amin")) {
+        tailored = "Aku ikut mengaminkan doamu dengan sepenuh hati. Semoga Allah dengar, mudahkan, dan jawab dengan cara yang paling baik untuk kamu.";
+      } else if (wish.includes("kita") || wish.includes("hubungan") || wish.includes("raihan") || wish.includes("sayang")) {
+        tailored = "Aku ikut mengaminkan khusus untuk hal baik tentang kita. Semoga kita sama-sama belajar menjadi lebih dewasa, lebih hangat, dan lebih saling menjaga.";
+      } else {
+        tailored = "Aku ikut mengaminkan doamu. Semoga apa pun yang kamu simpan di hati malam ini Allah mudahkan jalannya dan kabulkan dengan cara yang paling indah.";
+      }
+
+      return `Aku baca doa yang kamu tulis tadi: “${value}” ${tailored}`;
+    }
+
+
+    function goLetter() {
+      showScene("letter");
+
+      const wishParagraph = document.getElementById("selectedWishParagraph");
+      if (wishParagraph) {
+        wishParagraph.textContent = "Doa yang kamu tulis tadi sudah tersimpan. Aku akan mengaminkannya dengan lebih pelan di surat rahasia terakhir.";
+      }
+
+      setDialog(
+        ui.letterText,
+        ui.letterChoices,
+        "Ada satu surat kecil dari aku.\nBacanya pelan-pelan aja ya.",
+        [
+          { label: "Lihat doa-doanya", onClick: goWishes }
+        ],
+        document.querySelector("#sceneLetter .speaker"),
+        "Raihan"
+      );
+    }
+
+    function goWishes() {
+      showScene("wishes");
+      setDialog(
+        ui.wishesText,
+        ui.wishesChoices,
+        "Sekarang giliran beberapa doa kecil dari aku untuk kamu.",
+        [
+          { label: "Buka surat rahasia 🤍", onClick: goSecretLetter },
+          { label: "Langsung ke kartu akhir", variant: "secondary", onClick: goFinalCard }
+        ],
+        document.querySelector("#sceneWishes .speaker"),
+        "Narasi"
+      );
+    }
+
+    function goSecretLetter() {
+      showScene("secretLetter");
+
+      const line = document.getElementById("secretWishLine");
+      if (line) {
+        line.textContent = gameState.selectedWishText || "Doa yang kamu tulis tadi aku aminkan. Semoga Allah kabulkan dengan cara yang paling indah.";
+      }
+
+      setDialog(
+        ui.secretLetterText,
+        ui.secretLetterChoices,
+        "Di bagian ini, aku ikut mengaminkan doa yang kamu tulis tadi.\nPelan-pelan aja bacanya.",
+        [
+          { label: "Lanjut ke kartu akhir", onClick: goFinalCard }
+        ],
+        document.querySelector("#sceneSecretLetter .speaker"),
+        "Raihan"
+      );
+    }
+
+    function goFinalCard() {
+      showScene("finalCard");
+      startConfetti(2600, 170);
+
+      setDialog(
+        ui.finalCardText,
+        ui.finalCardChoices,
+        "Ini kartu akhirnya. Bagian ini cocok buat di-screenshot kalau kamu mau simpan.",
+        [
+          { label: "Selesai", onClick: goEnding },
+          { label: "Confetti lagi ✨", variant: "secondary", onClick: () => startConfetti(2500, 160) }
+        ],
+        document.querySelector("#sceneFinalCard .speaker"),
+        "Narasi"
+      );
+    }
+
+    function goEnding() {
+      showScene("ending");
+      startConfetti(2200, 140);
+    }
+
+    function goVideoOutro() {
+      showScene("videoOutro");
+      setDialog(
+        ui.videoOutroText,
+        ui.videoOutroChoices,
+        "Ini penutup terakhirnya. Tekan play di videonya ya.",
+        [],
+        document.querySelector("#sceneVideoOutro .speaker"),
+        "Raihan"
+      );
+
+      const video = document.getElementById("finalVideo");
+      if (video) {
+        video.currentTime = 0;
+      }
+    }
+
+    function setupFinalButtons() {
+      document.getElementById("replayBtn").addEventListener("click", resetGame);
+      document.getElementById("finalConfettiBtn").addEventListener("click", () => startConfetti(2600, 160));
+
+      const playOutroVideoBtn = document.getElementById("playOutroVideoBtn");
+      const backToFinalCardBtn = document.getElementById("backToFinalCardBtn");
+      const replayFromVideoBtn = document.getElementById("replayFromVideoBtn");
+
+      if (playOutroVideoBtn) playOutroVideoBtn.addEventListener("click", goVideoOutro);
+      if (backToFinalCardBtn) backToFinalCardBtn.addEventListener("click", goFinalCard);
+      if (replayFromVideoBtn) replayFromVideoBtn.addEventListener("click", resetGame);
+      soundBtn.addEventListener("click", () => {
+        gameState.soundEnabled = !gameState.soundEnabled;
+        soundBtn.textContent = gameState.soundEnabled ? "♪" : "×";
+        showToast(gameState.soundEnabled ? "Sound aktif." : "Sound dimatikan.");
+      });
+    }
+
+    function resetGame() {
+      const finalVideo = document.getElementById("finalVideo");
+      if (finalVideo) {
+        finalVideo.pause();
+        finalVideo.currentTime = 0;
+      }
+
+      gameState.lightOn = false;
+      gameState.cluesFound = [];
+      gameState.doorChoice = null;
+      gameState.selectedWish = null;
+      gameState.typedWish = null;
+      gameState.selectedWishText = null;
+      gameState.selectedWishLabel = null;
+      gameState.meisyaReaction = null;
+      gameState.codeUnlocked = false;
+      gameState.musicStarted = false;
+      gameState.routeNotes = [];
+
+      document.getElementById("roomStage").classList.add("dim");
+      document.getElementById("switchObj").classList.remove("on");
+      ["calendar", "photo", "letter"].forEach(type => {
+        document.getElementById("check-" + type).textContent = "?";
+        document.getElementById("check-" + type).classList.remove("done");
+      });
+
+      document.getElementById("calendarObj").classList.remove("found");
+      document.getElementById("photoObj").classList.remove("found");
+      document.getElementById("letterObj").classList.remove("found");
+      document.getElementById("tipCalendar").classList.remove("hidden");
+      document.getElementById("tipPhoto").classList.remove("hidden");
+      document.getElementById("tipLetter").classList.remove("hidden");
+      const typedWishInput = document.getElementById("typedWishInput");
+      const typedWishCounter = document.getElementById("typedWishCounter");
+      const typedWishPreview = document.getElementById("typedWishPreview");
+      const typedWishPreviewText = document.getElementById("typedWishPreviewText");
+      if (typedWishInput) typedWishInput.value = "";
+      if (typedWishCounter) typedWishCounter.textContent = "0/260 karakter. Tulis dengan pelan, tidak perlu panjang.";
+      if (typedWishPreview) typedWishPreview.classList.add("hidden");
+      if (typedWishPreviewText) typedWishPreviewText.textContent = "";
+      document.getElementById("wishContinueBtn").classList.add("hidden");
+      document.getElementById("textWish").textContent = "Sebelum meniup lilin, tulis satu doa yang benar-benar kamu inginkan dari hati.";
+      makeCandles("candlesReveal");
+      makeCandles("candlesBlow");
+      showScene("dark");
+      runDarkIntro();
+    }
+
+    function makeCandles(containerId) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = "";
+
+      for (let i = 0; i < CANDLE_COUNT; i++) {
+        const candle = document.createElement("span");
+        candle.className = "candle";
+        candle.style.setProperty("--i", i);
+        candle.innerHTML = `
+          <span class="wick"></span>
+          <span class="flame"></span>
+          <span class="smoke"></span>
+        `;
+        container.appendChild(candle);
+      }
+    }
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add("show");
+      clearTimeout(showToast.timer);
+      showToast.timer = setTimeout(() => toast.classList.remove("show"), 2300);
+    }
+
+    function createLeaves(stageId, count) {
+      const stage = document.getElementById(stageId);
+      for (let i = 0; i < count; i++) {
+        const leaf = document.createElement("span");
+        leaf.className = "falling-leaf";
+        leaf.style.setProperty("--x", Math.round(Math.random() * 100));
+        leaf.style.setProperty("--d", Math.round(Math.random() * 7));
+        leaf.style.setProperty("--delay", Math.random() * 10);
+        leaf.style.setProperty("--r", Math.round(Math.random() * 360));
+        stage.appendChild(leaf);
+      }
+    }
+
+    // Audio
+    function initAudio() {
+      try {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContext) return;
+        if (!audioCtx) audioCtx = new AudioContext();
+        if (audioCtx.state === "suspended") audioCtx.resume();
+      } catch (err) {
+        console.warn("Audio tidak tersedia di browser ini.", err);
+      }
+    }
+
+    function beep(freq = 440, duration = 0.08) {
+      if (!gameState.soundEnabled) return;
+      initAudio();
+      if (!audioCtx) return;
+
+      const now = audioCtx.currentTime;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(freq, now);
+      gain.gain.setValueAtTime(0.001, now);
+      gain.gain.exponentialRampToValueAtTime(0.045, now + 0.01);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start(now);
+      osc.stop(now + duration + 0.02);
+    }
+
+    function playTone(frequency, start, duration, type = "sine", gainValue = 0.055) {
+      if (!audioCtx || !gameState.soundEnabled) return;
+
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+
+      osc.type = type;
+      osc.frequency.setValueAtTime(frequency, start);
+
+      gain.gain.setValueAtTime(0.0001, start);
+      gain.gain.exponentialRampToValueAtTime(gainValue, start + 0.025);
+      gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
+
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+
+      osc.start(start);
+      osc.stop(start + duration + 0.03);
+    }
+
+    function playHappyBirthday() {
+      initAudio();
+      if (!audioCtx || gameState.musicStarted || !gameState.soundEnabled) return;
+      gameState.musicStarted = true;
+      musicPill.classList.add("show");
+
+      const now = audioCtx.currentTime + 0.1;
+      const notes = {
+        C4: 261.63, D4: 293.66, E4: 329.63, F4: 349.23, G4: 392.00,
+        A4: 440.00, Bb4: 466.16, C5: 523.25, D5: 587.33,
+        E5: 659.25, F5: 698.46, G5: 783.99
+      };
+
+      const melody = [
+        ["G4", .25], ["G4", .25], ["A4", .5], ["G4", .5], ["C5", .5], ["Bb4", 1],
+        ["G4", .25], ["G4", .25], ["A4", .5], ["G4", .5], ["D5", .5], ["C5", 1],
+        ["G4", .25], ["G4", .25], ["G5", .5], ["E5", .5], ["C5", .5], ["Bb4", .5], ["A4", 1],
+        ["F5", .25], ["F5", .25], ["E5", .5], ["C5", .5], ["D5", .5], ["C5", 1.2]
+      ];
+
+      let t = now;
+      melody.forEach(([note, beat]) => {
+        const duration = beat * 0.58;
+        playTone(notes[note], t, duration, "sine", 0.06);
+        playTone(notes[note] / 2, t, duration, "triangle", 0.018);
+        t += duration + 0.055;
+      });
+
+      setTimeout(() => musicPill.classList.remove("show"), 6400);
+    }
+
+    // Confetti
+    const canvas = document.getElementById("confettiCanvas");
+    const ctx = canvas.getContext("2d");
+    let confetti = [];
+    let confettiAnimation = null;
+
+    function setupCanvas() {
+      resizeCanvas();
+      window.addEventListener("resize", resizeCanvas);
+    }
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth * window.devicePixelRatio;
+      canvas.height = window.innerHeight * window.devicePixelRatio;
+      ctx.setTransform(window.devicePixelRatio, 0, 0, window.devicePixelRatio, 0, 0);
+    }
+
+    function createConfettiPiece() {
+      const colors = ["#87A878", "#C8D9B8", "#F5F7F2", "#FFFFFF", "#FFF5DF", "#4A6741"];
+      return {
+        x: Math.random() * window.innerWidth,
+        y: -20 - Math.random() * 120,
+        w: 6 + Math.random() * 8,
+        h: 8 + Math.random() * 12,
+        vy: 2.3 + Math.random() * 4.2,
+        vx: -1.4 + Math.random() * 2.8,
+        rot: Math.random() * Math.PI,
+        vr: -0.15 + Math.random() * 0.3,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        alpha: 0.8 + Math.random() * 0.2
+      };
+    }
+
+    function startConfetti(duration = 3200, amount = 160) {
+      confetti = Array.from({ length: amount }, createConfettiPiece);
+      const endAt = performance.now() + duration;
+
+      function draw(now) {
+        ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+
+        confetti.forEach(piece => {
+          piece.x += piece.vx;
+          piece.y += piece.vy;
+          piece.rot += piece.vr;
+
+          if (piece.y > window.innerHeight + 30) {
+            Object.assign(piece, createConfettiPiece(), { y: -20 });
+          }
+
+          ctx.save();
+          ctx.translate(piece.x, piece.y);
+          ctx.rotate(piece.rot);
+          ctx.globalAlpha = piece.alpha;
+          ctx.fillStyle = piece.color;
+          ctx.fillRect(-piece.w / 2, -piece.h / 2, piece.w, piece.h);
+          ctx.restore();
+        });
+
+        if (now < endAt) {
+          confettiAnimation = requestAnimationFrame(draw);
+        } else {
+          ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+          cancelAnimationFrame(confettiAnimation);
+        }
+      }
+
+      cancelAnimationFrame(confettiAnimation);
+      confettiAnimation = requestAnimationFrame(draw);
+    }
+
+    init();
+  </script>
+</body>
+</html>
