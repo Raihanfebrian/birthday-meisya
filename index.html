@@ -3192,6 +3192,167 @@
     /* HP dan tablet */
 
     /* V24 mobile stability patch */
+
+    /* V25: YouTube backsound + visible mobile character movement */
+    .backsound-host {
+      position: fixed;
+      width: 1px;
+      height: 1px;
+      right: 0;
+      bottom: 0;
+      opacity: 0.001;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: -1;
+    }
+
+    .backsound-host iframe {
+      width: 1px;
+      height: 1px;
+      border: 0;
+    }
+
+    .backsound-pill {
+      position: fixed;
+      right: 14px;
+      bottom: 14px;
+      z-index: 140;
+      padding: 9px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.86);
+      color: var(--accent);
+      border: 1px solid rgba(74,103,65,0.16);
+      box-shadow: 0 12px 34px rgba(45,58,46,0.14);
+      font-size: 0.78rem;
+      font-weight: 900;
+      backdrop-filter: blur(14px);
+    }
+
+    @media (max-width: 820px) {
+      .door-story-stage .girl-character {
+        left: 18%;
+        bottom: 22%;
+        transform: scale(0.78);
+      }
+
+      .door-story-stage.approach-door .girl-character {
+        animation: girlApproachDoorMobileVisible 2.35s ease forwards !important;
+      }
+
+      @keyframes girlApproachDoorMobileVisible {
+        0% {
+          left: 18%;
+          bottom: 22%;
+          transform: scale(0.78);
+        }
+        45% {
+          left: 39%;
+          bottom: 12%;
+          transform: scale(0.86);
+        }
+        100% {
+          left: 56%;
+          bottom: 12%;
+          transform: scale(0.92);
+        }
+      }
+
+      .door-story-stage.peek-from-door.peek-action .girl-character {
+        animation: girlPeekFromDoorMobileVisible 900ms ease forwards !important;
+      }
+
+      @keyframes girlPeekFromDoorMobileVisible {
+        0% {
+          left: 56%;
+          bottom: 12%;
+          transform: scale(0.92) rotate(0deg);
+        }
+        55% {
+          left: 58%;
+          bottom: 12%;
+          transform: scale(0.94) rotate(-5deg);
+        }
+        100% {
+          left: 59%;
+          bottom: 12%;
+          transform: scale(0.9) rotate(-2deg);
+        }
+      }
+
+      .door-story-stage.open-from-door.door-action .girl-character {
+        animation: girlOpenFromDoorMobileVisible 900ms ease forwards !important;
+      }
+
+      @keyframes girlOpenFromDoorMobileVisible {
+        0% {
+          left: 56%;
+          bottom: 12%;
+          transform: scale(0.92) rotate(0deg);
+        }
+        45% {
+          left: 58%;
+          bottom: 12%;
+          transform: scale(0.94) rotate(-3deg);
+        }
+        100% {
+          left: 56%;
+          bottom: 12%;
+          transform: scale(0.92) rotate(0deg);
+        }
+      }
+
+      .door-story-stage.door-action:not(.open-from-door):not(.after-peek) .girl-character {
+        animation: girlToDoorMobileVisible 2.25s ease forwards !important;
+      }
+
+      @keyframes girlToDoorMobileVisible {
+        0% {
+          left: 18%;
+          bottom: 22%;
+          transform: scale(0.78);
+        }
+        45% {
+          left: 41%;
+          bottom: 12%;
+          transform: scale(0.86);
+        }
+        100% {
+          left: 56%;
+          bottom: 12%;
+          transform: scale(0.92);
+        }
+      }
+
+      .door-story-stage.after-peek.door-action .girl-character {
+        animation: girlPeekReactMobileVisible 900ms ease forwards !important;
+      }
+
+      @keyframes girlPeekReactMobileVisible {
+        0% {
+          left: 59%;
+          bottom: 12%;
+          transform: scale(0.9) rotate(-2deg);
+        }
+        42% {
+          left: 58%;
+          bottom: 12%;
+          transform: scale(0.94) rotate(-7deg);
+        }
+        100% {
+          left: 56%;
+          bottom: 12%;
+          transform: scale(0.92) rotate(0deg);
+        }
+      }
+
+      .backsound-pill {
+        right: 10px;
+        bottom: 10px;
+        font-size: 0.72rem;
+        padding: 8px 10px;
+      }
+    }
+
     @media (max-width: 820px) {
       html,
       body {
@@ -3537,14 +3698,14 @@
       }
 
       .door-story-stage .girl-character {
-        left: 18% !important;
-        bottom: 22% !important;
-        transform: scale(0.78) !important;
+        left: 18%;
+        bottom: 22%;
+        transform: scale(0.78);
       }
 
       .door-story-stage.approach-door .girl-character,
       .door-story-stage.open-from-door.door-action .girl-character {
-        transform: none !important;
+        /* movement handled by V25 mobile keyframes */
       }
 
       .boy-character {
@@ -4527,6 +4688,15 @@
 
     <div class="toast" id="toast"></div>
     <div class="music-pill" id="musicPill">♪ Happy Birthday untuk Meisya</div>
+    <div class="backsound-host" id="backsoundHost" aria-hidden="true">
+      <iframe
+        id="backsoundFrame"
+        src=""
+        title="Backsound"
+        allow="autoplay; encrypted-media"
+      ></iframe>
+    </div>
+    <button class="backsound-pill hidden" id="backsoundPill" type="button">♪ Backsound</button>
 
     <section class="scene active" id="sceneDark">
       <div class="scene-inner">
@@ -5015,6 +5185,7 @@
       codeUnlocked: false,
       soundEnabled: true,
       musicStarted: false,
+      backgroundMusicStarted: false,
       routeNotes: []
     };
 
@@ -5946,6 +6117,7 @@
     }
 
     function goEnding() {
+      stopBackgroundMusic();
       showScene("ending");
       startConfetti(2200, 140);
 
@@ -5956,6 +6128,7 @@
     }
 
     function goVideoOutro() {
+      stopBackgroundMusic();
       showScene("videoOutro");
 
       const finalVideoFrame = document.getElementById("finalVideoFrame");
@@ -5992,11 +6165,14 @@
       soundBtn.addEventListener("click", () => {
         gameState.soundEnabled = !gameState.soundEnabled;
         soundBtn.textContent = gameState.soundEnabled ? "♪" : "×";
+        if (!gameState.soundEnabled) stopBackgroundMusic();
         showToast(gameState.soundEnabled ? "Sound aktif." : "Sound dimatikan.");
       });
     }
 
     function resetGame() {
+      stopBackgroundMusic();
+
       const finalVideoFrame = document.getElementById("finalVideoFrame");
       if (finalVideoFrame) {
         finalVideoFrame.src = "https://www.youtube.com/embed/X3B_oG1gTwQ?rel=0&modestbranding=1";
@@ -6012,6 +6188,7 @@
       gameState.meisyaReaction = null;
       gameState.codeUnlocked = false;
       gameState.musicStarted = false;
+      gameState.backgroundMusicStarted = false;
       gameState.routeNotes = [];
 
       document.getElementById("roomStage").classList.add("dim");
@@ -6131,6 +6308,40 @@
       osc.stop(start + duration + 0.03);
     }
 
+    function startBackgroundMusic() {
+      if (!gameState.soundEnabled || gameState.backgroundMusicStarted) return;
+
+      const frame = document.getElementById("backsoundFrame");
+      const pill = document.getElementById("backsoundPill");
+
+      if (frame) {
+        frame.src = "https://www.youtube.com/embed/Huscap1D71A?autoplay=1&loop=1&playlist=Huscap1D71A&controls=0&rel=0&modestbranding=1&playsinline=1";
+        gameState.backgroundMusicStarted = true;
+      }
+
+      if (pill) {
+        pill.classList.remove("hidden");
+        pill.textContent = "♪ Backsound";
+        pill.onclick = () => {
+          const currentFrame = document.getElementById("backsoundFrame");
+          if (currentFrame) {
+            currentFrame.src = "https://www.youtube.com/embed/Huscap1D71A?autoplay=1&loop=1&playlist=Huscap1D71A&controls=0&rel=0&modestbranding=1&playsinline=1";
+            gameState.backgroundMusicStarted = true;
+          }
+        };
+      }
+    }
+
+    function stopBackgroundMusic() {
+      const frame = document.getElementById("backsoundFrame");
+      const pill = document.getElementById("backsoundPill");
+
+      if (frame) frame.src = "";
+      if (pill) pill.classList.add("hidden");
+
+      gameState.backgroundMusicStarted = false;
+    }
+
     function playHappyBirthday() {
       initAudio();
       if (!audioCtx || gameState.musicStarted || !gameState.soundEnabled) return;
@@ -6159,7 +6370,10 @@
         t += duration + 0.055;
       });
 
-      setTimeout(() => musicPill.classList.remove("show"), 6400);
+      setTimeout(() => {
+        musicPill.classList.remove("show");
+        startBackgroundMusic();
+      }, 6400);
     }
 
     // Confetti
