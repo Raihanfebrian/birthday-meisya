@@ -3105,6 +3105,156 @@
     }
 
     /* Tablet / HP */
+
+    /* V23 patch: fix The End video getting clipped */
+    #sceneEnding .stage {
+      height: auto !important;
+      min-height: clamp(560px, 72dvh, 900px) !important;
+      max-height: none !important;
+      overflow: visible !important;
+    }
+
+    #sceneEnding .reveal-card.letter {
+      height: auto !important;
+      min-height: clamp(560px, 72dvh, 900px) !important;
+      max-height: none !important;
+      overflow: visible !important;
+      padding:
+        clamp(24px, 3.8vmin, 52px)
+        clamp(18px, 4.6vmin, 64px) !important;
+    }
+
+    #sceneEnding .letter h1 {
+      font-size: clamp(2rem, 5.1vmin, 4.2rem) !important;
+      margin-bottom: clamp(10px, 1.5vmin, 18px) !important;
+    }
+
+    #sceneEnding .letter p {
+      font-size: clamp(0.9rem, 1.35vmin, 1.04rem) !important;
+      line-height: 1.62 !important;
+      margin-top: 8px !important;
+      margin-bottom: 8px !important;
+    }
+
+    #sceneEnding .ending-video-inline {
+      width: min(720px, 92%) !important;
+      margin-top: clamp(14px, 2vmin, 22px) !important;
+      border-radius: 24px !important;
+    }
+
+    #sceneEnding .ending-video-inline iframe {
+      width: 100% !important;
+      aspect-ratio: 16 / 9 !important;
+      min-height: 0 !important;
+      height: auto !important;
+      max-height: min(38dvh, 390px) !important;
+    }
+
+    #sceneEnding .ending-video-caption {
+      margin-top: 8px !important;
+      font-size: clamp(0.72rem, 1.05vmin, 0.84rem) !important;
+    }
+
+    #sceneEnding .ending-stage::before {
+      font-size: clamp(8rem, 22vmin, 18rem) !important;
+      opacity: 0.72;
+    }
+
+    /* Layar laptop pendek */
+    @media (min-width: 821px) and (max-height: 760px) {
+      #sceneEnding .stage {
+        min-height: auto !important;
+      }
+
+      #sceneEnding .reveal-card.letter {
+        min-height: auto !important;
+        padding: 22px 34px !important;
+      }
+
+      #sceneEnding .letter h1 {
+        font-size: clamp(1.8rem, 4vmin, 3.2rem) !important;
+      }
+
+      #sceneEnding .letter p {
+        font-size: 0.86rem !important;
+        line-height: 1.5 !important;
+      }
+
+      #sceneEnding .ending-video-inline {
+        width: min(620px, 86%) !important;
+      }
+
+      #sceneEnding .ending-video-inline iframe {
+        max-height: 34dvh !important;
+      }
+    }
+
+    /* HP dan tablet */
+    @media (max-width: 820px) {
+      #sceneEnding .stage {
+        height: auto !important;
+        min-height: auto !important;
+        max-height: none !important;
+        overflow: visible !important;
+      }
+
+      #sceneEnding .reveal-card.letter {
+        height: auto !important;
+        min-height: auto !important;
+        max-height: none !important;
+        overflow: visible !important;
+        padding: 24px 16px !important;
+      }
+
+      #sceneEnding .letter h1 {
+        font-size: clamp(1.8rem, 7.4vw, 3rem) !important;
+      }
+
+      #sceneEnding .letter p {
+        font-size: clamp(0.82rem, 3vw, 0.96rem) !important;
+        line-height: 1.55 !important;
+      }
+
+      #sceneEnding .ending-video-inline {
+        width: 100% !important;
+        border-radius: 20px !important;
+      }
+
+      #sceneEnding .ending-video-inline iframe {
+        max-height: none !important;
+        min-height: 190px !important;
+        aspect-ratio: 16 / 9 !important;
+      }
+
+      #sceneEnding .ending-video-caption {
+        font-size: 0.76rem !important;
+      }
+    }
+
+    /* HP sangat pendek */
+    @media (max-width: 520px) and (max-height: 740px) {
+      #sceneEnding .reveal-card.letter {
+        padding: 20px 14px !important;
+      }
+
+      #sceneEnding .letter h1 {
+        font-size: clamp(1.55rem, 6.8vw, 2.35rem) !important;
+      }
+
+      #sceneEnding .letter p {
+        font-size: 0.78rem !important;
+        line-height: 1.46 !important;
+      }
+
+      #sceneEnding .ending-video-inline iframe {
+        min-height: 165px !important;
+      }
+
+      #sceneEnding .ending-video-caption {
+        font-size: 0.7rem !important;
+      }
+    }
+
     @media (max-width: 820px) {
       #sceneLetter,
       #sceneWishes,
