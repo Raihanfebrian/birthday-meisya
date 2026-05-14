@@ -4398,44 +4398,44 @@
       }
 
       const peekIntroText = alreadyNearDoor
-        ? "Meisya sudah berdiri dekat pintu.\nIa sedikit menunduk, lalu mengintip pelan dari lubang kunci..."
+        ? "Meisya sudah berdiri dekat pintu.\nIa sedikit menunduk, lalu bersiap mengintip dari lubang kunci..."
         : "Meisya pelan-pelan turun dari kasur.\nLangkahnya kecil, hati-hati, lalu ia mendekat ke pintu untuk mengintip...";
-
-      const waitTime = alreadyNearDoor ? 1250 : 2350;
 
       setDialog(
         ui.doorText,
         ui.doorChoices,
         peekIntroText,
-        [],
+        [
+          { label: "Intip dari lubang kunci", onClick: showPeekResult }
+        ],
         document.getElementById("speakerDoor"),
         "Narasi"
       );
+    }
 
-      setTimeout(() => {
-        setDialog(
-          ui.doorText,
-          ui.doorChoices,
-          "Meisya mengintip dari lubang kunci.\nDi balik pintu, terlihat seseorang berdiri sambil memegang sesuatu.\nAda nyala kecil di atasnya... sepertinya lilin.",
-          [
-            { label: "Buka sekarang", onClick: () => revealSurprise(true) },
-            { label: "Pura-pura belum tahu", variant: "secondary", onClick: () => {
-              setDialog(
-                ui.doorText,
-                ui.doorChoices,
-                "Kamu pura-pura belum tahu.\nDari luar, terdengar suara Raihan yang pelan tapi jelas:\n“Meisya... ini aku. Ayo buka pintunya.”",
-                [
-                  { label: "Oke, buka pintunya", onClick: () => revealSurprise(true) }
-                ],
-                document.getElementById("speakerDoor"),
-                "Raihan"
-              );
-            }}
-          ],
-          document.getElementById("speakerDoor"),
-          "Narasi"
-        );
-      }, waitTime);
+    function showPeekResult() {
+      setDialog(
+        ui.doorText,
+        ui.doorChoices,
+        "Meisya mengintip dari lubang kunci.\nDi balik pintu, terlihat seseorang berdiri sambil memegang sesuatu.\nAda nyala kecil di atasnya... sepertinya lilin.",
+        [
+          { label: "Buka sekarang", onClick: () => revealSurprise(true) },
+          { label: "Pura-pura belum tahu", variant: "secondary", onClick: () => {
+            setDialog(
+              ui.doorText,
+              ui.doorChoices,
+              "Kamu pura-pura belum tahu.\nDari luar, terdengar suara Raihan yang pelan tapi jelas:\n“Meisya... ini aku. Ayo buka pintunya.”",
+              [
+                { label: "Oke, buka pintunya", onClick: () => revealSurprise(true) }
+              ],
+              document.getElementById("speakerDoor"),
+              "Raihan"
+            );
+          }}
+        ],
+        document.getElementById("speakerDoor"),
+        "Narasi"
+      );
     }
 
     function revealSurprise(fromPeek = false) {
@@ -4660,22 +4660,21 @@
 
           setTimeout(() => {
             timerBox.classList.remove("hidden");
-            startMiniTimer(() => {
-              blowOutCandles();
-            });
+            blowOutCandles();
+            startMiniTimer(() => {});
           }, 850);
         }
       }, 950);
 
       function startMiniTimer(onDone) {
-        let left = 5;
+        let left = 3;
         timerText.textContent = left;
         timerCircle.style.setProperty("--progress", 100);
 
         const interval = setInterval(() => {
           left--;
           timerText.textContent = left;
-          timerCircle.style.setProperty("--progress", (left / 5) * 100);
+          timerCircle.style.setProperty("--progress", (left / 3) * 100);
 
           if (left <= 0) {
             clearInterval(interval);
@@ -4697,17 +4696,17 @@
         setTimeout(() => {
           candle.style.setProperty("--smoke-delay", index * 8);
           candle.classList.add("out");
-        }, index * 70);
+        }, index * 130);
       });
 
       setTimeout(() => {
         startConfetti(3800, 190);
         playHappyBirthday();
-      }, 900);
+      }, 3100);
 
       setTimeout(() => {
         goLetter();
-      }, 7200);
+      }, 8500);
     }
 
 
